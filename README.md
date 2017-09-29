@@ -13,4 +13,4 @@ The compare-match interrupt code routine (ISR) is triggered every millisecond, a
 
 More can be said, but I'm running out of time tonight.  Let me just load some working code for you to mold to your needs.  This is c++, so it is free.  A machine code version awaits a demonstrated interest from potential customers who are willing to pay a few bucks for it.  Please let me know if that includes you!
 
-I just got this functional.  It is not intended for first-project newbies who'll have difficulty modifying to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time.
+I just got this functional, not beautiful.  It is not intended for first-project newbies who'll have difficulty modifying to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time.
