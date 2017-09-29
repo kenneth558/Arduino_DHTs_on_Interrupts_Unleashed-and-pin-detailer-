@@ -1,45 +1,3 @@
-/*
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * re-do the structs schema so that all interrupt service routines and start_the_DHT can locate their variable values without calculating
- * Those variables are: 
- *     mask_of_resting_devices_pins in order to quickly know which millis to check without iterating
- *     all DEVSPEC and ISRSPEC and Device_Timer elements
- *     PINSPEC has all these things
- *     
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
 //structure description:
 //each ISRSPEC has a structure specifying:
 // - timestamp micros of last portwide device detection action by this port
@@ -105,7 +63,6 @@ volatile typedef struct device_specific
     volatile unsigned long timestamp_of_pin_last_attempted_device_read_millis = 0;
 //    u16 low_going_interval_micros = 0;
     volatile unsigned long high_going_timestamp_micros = 0;                                                     //Don't corrupt this for error-communications.  The last one from device is needed to set the rest-time timer much later
-    volatile u8 next_bit_coming_from_dht = 0;//DEBUG ONLY TODO: REMOVE
     volatile unsigned long device_busy_resting_until_this_system_millis;
     volatile unsigned long start_time_plus_max_acq_time_in_uSecs;//This will get null'd when data is done processing
     volatile bool millis_will_overflow;
@@ -120,17 +77,6 @@ volatile typedef struct device_specific
     volatile u8* ddr_port_reg_addr;
     volatile u8* pin_reg_addr;
     volatile ISRSPEC* my_isr_addr;
-    volatile unsigned long debug_data[ 5 ];
-/*
-    volatile byte debug_PCICR;
-    volatile byte debug_pcmsk;
-    volatile unsigned long debug_device_busy_resting_until_this_system_millis;
-    volatile unsigned long debug_timestamp_of_pin_last_attempted_device_read_millis;
-    volatile unsigned long debug_start_time_plus_max_acq_time_in_uSecs;
-    volatile byte debug_ddr_b4;
-    volatile byte debug_active_pin_ddr_port_reg_addr;
-    volatile byte debug_active_pin_output_port_reg_addr;
-*/
 } DEVSPEC;
 
 volatile typedef struct PIN_xref
