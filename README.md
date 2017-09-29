@@ -1,4 +1,9 @@
       Arduino DHTs on Interrupt steroids
+Files you need to place in your sketch directory:
+	Arduino_DHTs_on_Interrupt_steroids.ino
+	ISRs.h
+	misc_maskportitems.h
+	structs.h
 
 The main purpose of the interrupt is to avoid the time waste of polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well, making their claimed use of interrupts virtually meaningless.  This project is not a formal library, just some ISR code, ISR launcher code in setup(), DHT device detection and ISR pin change detection code, and main loop() examples of how RH and temperatures are read from the data structures.  Note that it is not yet robust enough to leave an ISR completely without a device...I'll be working on that robustness and some important streamlining and memory efficiency elements in the coming days.  At this point, the best I can say about the progress right now is that it is debugged and works given at least one device per ISR.  Also, if you just want to see which pins of your board are served by PC ISRs and which ISR it is, this sketch is exactly what you need.  It is not hindered by incomplete definitions that support digitalPinToPCICRbit() and digitalPinToPCMSKbit() functions, as is the case with the official Mega 2560 IDE environment.  Screen shots are posted for the boards I had at hand.  Each Arduino type has a different amount of available RAM, and some boards are thusly limited to less than the maximum number of devices. I'll be working on more memory-efficient modifications while you try this version.
 
@@ -15,10 +20,3 @@ The compare-match interrupt code routine (ISR) is triggered every millisecond, a
 More can be said, but I'm running out of time tonight.  Let me just post some working code for you to mold to your needs.  This is c++, so it is free.  An assembly code version awaits until I see an interest demonstrated by [a] potential customer/employer[s].  Please let me know if that is you!
 
 I merely got this functional, not beautiful.  It is not intended for first-project newbies who need handholding modifying the code to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time, since a four microsecond delay is all it takes to corrupt the data stream.
-
-Files you need to place in your sketch directory:
-
-	Arduino_DHTs_on_Interrupt_steroids.ino
-	ISRs.h
-	misc_maskportitems.h
-	structs.h
