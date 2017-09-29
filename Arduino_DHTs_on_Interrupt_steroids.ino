@@ -5,7 +5,7 @@
  * 
  * 
  * 
- * TODO: debug eligible mask the rest of the way
+ * TODO: 
  * remove debugging code and comments
  * add functionalities:
  * make able to integrate into various environments including relay
@@ -305,7 +305,7 @@ bool build_from_nothing()
 /* */   delay( 10000 );
 /* */
     }
-    prep_ports_for_detection();//This should return info like 
+    prep_ports_for_detection();//?This should return info like 
 //populated ports string, 
 //    pre_array_boards_ports_string[ 0 ]
 //    byte eligible_devices_this_port
@@ -362,21 +362,6 @@ bool build_from_nothing()
                 {
                     string_of_all_ports_that_are_populated[ populated_port_count ] = portchar;
                     string_of_all_ports_that_are_populated[ ++populated_port_count ] = 0;
-/*  
-                    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-                    Serial.setTimeout( 10 ); //
-                    while ( !Serial ) { 
-                      ; // wait for serial port to connect. Needed for Leonardo's native USB
-                    }
-                    Serial.print( F( "string_of_all_ports_that_are_populated = " ) );
-                    Serial.print( string_of_all_ports_that_are_populated );
-                    Serial.print( F( " as pin " ) );
-                    Serial.print( pin );
-                    Serial.print( F( " brings in the new port" ) );
-                    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                    Serial.flush();
-                    Serial.end();
- */
 
                     for( u8 tmp_pin = pin; tmp_pin < NUM_DIGITAL_PINS; tmp_pin++ )//for remainder of pins again, see all on this port that need a devspec entry
                     {
@@ -385,21 +370,6 @@ bool build_from_nothing()
                             {
                                 pre_array_devspec_index[ number_of_devices_found++ ] = tmp_pin;//TODO: see if we need to add one to pin number//building a sparsed array
                                 eligible_devices_this_port &= ~digitalPinToBitMask( tmp_pin );//This will make sure that duplicate pins with higher digital pin numbers get ignored
-//                                pre_array_devspec_count++;
- /*
-                                Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-                                Serial.setTimeout( 10 ); //
-                                while ( !Serial ) { 
-                                  ; // wait for serial port to connect. Needed for Leonardo's native USB
-                                }
-                                Serial.print( F( "Line 1064, number_of_devices_found: " ) );
-                                Serial.print( number_of_devices_found );
-                                Serial.print( F( ", pre_array_devspec_count: " ) );
-                                Serial.print( number_of_devices_found );
-                                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                                Serial.flush();
-                                Serial.end();
- */
                             }
                     }
                 }
@@ -481,37 +451,7 @@ bool build_from_nothing()
         /*
  */
     previous_ISR_WITH_DHT_port_pinmask_stack_array = ( byte* )pre_array_boards_ports_string;//Just as a matter of good practice, doesn't really do anything here. everywhere else before a free instruction, this line will better match the names of the pointers
-/* 
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "line 1191" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
-*/
     free ( previous_ISR_WITH_DHT_port_pinmask_stack_array ); //Just as a matter of good practice, doesn't really do anything here
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "line 1204: " ) );
-        Serial.print( F( "number_of_ISRs = " ) );
-        Serial.print( number_of_ISRs );
-        Serial.print( F( ", populated_port_count = " ) );
-        Serial.print( populated_port_count );
-        Serial.print( F( ", number_of_devices_found = " ) );
-        Serial.print( number_of_devices_found );
-        Serial.print( F( ", populated_ports_string = " ) );
-        Serial.print( populated_ports_string );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
- */
 
 unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
         sizeof( PORTXREF ) + \
@@ -856,8 +796,6 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
         Devspec[ i ].consecutive_read_failures = 0;
         Devspec[ i ].consecutive_read_successes = 0;
         Devspec[ i ].start_time_plus_max_acq_time_in_uSecs = 0;
-        for( u8 ij = 0; ij < sizeof( Devspec[ i ].debug_data ) / sizeof( Devspec[ i ].debug_data[ 0 ] ); ij++ )
-            Devspec[ i ].debug_data[ ij ] = 0;
         long unsigned timenow = millis();//A single point of reference to prevent changing during the following
         Devspec[ i ].device_busy_resting_until_this_system_millis = Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
         //          Devspec[ i ].device_busy_resting_until_this_system_millis = timenow + Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
@@ -873,39 +811,6 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
         Devspec[ i ].ddr_port_reg_addr = portModeRegister( digitalPinToPort( Devspec[ i ].Dpin ) );
         Devspec[ i ].pin_reg_addr = portInputRegister( digitalPinToPort( Devspec[ i ].Dpin ) );
         Devspec[ i ].index_of_next_valid_readings_sets = 0;
-/*
-Devspec[ i ].debug_PCICR = 0;
-Devspec[ i ].debug_pcmsk = 0;
-Devspec[ i ].debug_device_busy_resting_until_this_system_millis = 0;
-Devspec[ i ].debug_timestamp_of_pin_last_attempted_device_read_millis = 0;
-Devspec[ i ].debug_start_time_plus_max_acq_time_in_uSecs = 0;
-Devspec[ i ].debug_start_time_plus_max_acq_time_in_uSecs = 0;
-Devspec[ i ].debug_active_pin_ddr_port_reg_addr = 0;
-Devspec[ i ].debug_active_pin_output_port_reg_addr = 0;
-Devspec[ i ].debug_ddr_b4 = 0;
-*/
-//        Serial.print( F( "Devspec[ i ].Dpin = " ) );
-//        Serial.print( Devspec[ i ].Dpin );
-//        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-          
-
-/*        if( devspec_index[ i ] )
-//        {
-//This loop does not seem to take
-            Devspec[ Pinxref->PIN_xref[ i ] ].Dpin = devspec_index[ i ] - 1;
-            //Isrxref.array_of_all_devspec_index_plus_1_this_ISR[ index_in_PCMSK_of_current_device_within_ISR ] = ;
-            Devspec[ devspec_index[ i ] - 1 ].last_valid_data_bytes_from_dht_device[ 0 ] = 0;
-            Devspec[ devspec_index[ i ] - 1 ].last_valid_data_bytes_from_dht_device[ 1 ] = 0;
-            Devspec[ devspec_index[ i ] - 1 ].last_valid_data_bytes_from_dht_device[ 2 ] = 0;
-            Devspec[ devspec_index[ i ] - 1 ].last_valid_data_bytes_from_dht_device[ 3 ] = 0;
-            Devspec[ devspec_index[ i ] - 1 ].timestamp_of_pin_valid_data_millis = 0;
-            Devspec[ devspec_index[ i ] - 1 ].timestamp_of_pin_last_attempted_device_read_millis = millis();
-            Devspec[ devspec_index[ i ] - 1 ].next_bit_coming_from_dht = 0;
-            Devspec[ devspec_index[ i ] - 1 ].device_busy_resting_until_this_system_millis = millis() + 2000;
-            Devspec[ devspec_index[ i ] - 1 ].millis_will_overflow = false;
-            Devspec[ devspec_index[ i ] - 1 ].devprot_index = 1;
-//        }
-*/
     }
 delay( 2000 );//ensure all devices get a rest period right here
 /*
@@ -1753,277 +1658,19 @@ byte find_all_dhts_this_port( u8 port_index, u8 eligible_devices_this_port )    
     unsigned long mid_bit_start_bit_low_checktime = 35;
     unsigned long mid_bit_start_bit_high_checktime = 120;
     unsigned long turnover_reference_time;
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.print( F( "PORT" ) );
-            Serial.print( ( char )( port_index+64 ) );
-            Serial.print( F( " Starting to look through " ) );
-            Serial.print( number_of_elements_in_ISR_part_of_port_pinmask_stack );
-            Serial.print( F( " ports " ) );
-            for ( u8 tmp_index = 0; tmp_index < number_of_elements_in_ISR_part_of_port_pinmask_stack; tmp_index++ )
-                Serial.print( ( char )( ports_string_in_heap_array[ tmp_index ] ) );
-//                Serial.print( ( char )( ports_string_in_heap_array[ tmp_index ] + 64 ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-*/
-/* */ /* 
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.flush();
-            Serial.end();
- */
-/*
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "PORT" ) );
-        Serial.print( ( char )( port_index+64 ) );
-        Serial.print( F( " before *&ISR_WITH_DHT_port_pinmask_stack_array[ number_of_ports_found + index ] = " ) );
-        Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ number_of_ports_found + index ],BIN );
-        Serial.print( F( " and *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_ports_found * 2 ) + index ] = " ) );
-        Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_ports_found * 2 ) + index ],BIN );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.flush();
-            Serial.end();
-*/
-/* */
-//        Serial.print( ( char )( *&ISR_WITH_DHT_port_pinmask_stack_array[ index ] ) );
-//            valid_pins_this_port = Portspec[ index ].mask_of_real_pins_this_port;
-//            if ( !( bool ) valid_pins_this_port ) return ( 0 );
-//            eligible_devices_this_port =  Portspec[ port_placement ].mask_of_safe_pins_to_detect_on & Portspec[ port_placement ].mask_of_real_pins_this_port;
-/* 
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-*/ /*
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.print( F( "PORT" ) );
-            Serial.print( ( char )( port_index+64 ) );
-            Serial.print( F( ", eligible_devices_this_port from array = " ) );
-            Serial.print( eligible_devices_this_port,BIN );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.print( F( ", physical pins = " ) );
-//            Serial.print( F( ", *&ISR_WITH_DHT_port_pinmask_stack_array[ number_of_elements_in_ISR_part_of_port_pinmask_stack + index ] = " ) );
-            Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ number_of_elements_in_ISR_part_of_port_pinmask_stack + index ],BIN );
-            Serial.print( F( ", testing-eligible pins = " ) );
-//            Serial.print( F( ", *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 2 ) + index ] = " ) );
-            Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 2 ) + index ],BIN );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.print( F( ", DHT-found pins = " ) );
-//            Serial.print( F( ", *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 3 ) + index ] = " ) );
-            Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 3 ) + index ],BIN );
-
-//THIS DOES NOT START WITH A 0 BECAUSE THIS FUNCTION GETS CALLED AFTER THE FIRST INTERRUPT ON THIS PORT IS ALREADY CAUGHT
-            Serial.print( F( ", PCINT pins = " ) );
-//            Serial.print( F( ", *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 4 ) + index ] = " ) );
-            Serial.print( *&ISR_WITH_DHT_port_pinmask_stack_array[ ( number_of_elements_in_ISR_part_of_port_pinmask_stack * 4 ) + index ],BIN );
-
-*/
-    
-/* 
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.flush();
-            Serial.end();
- */
-//    if ( index == number_of_elements_in_ISR_part_of_port_pinmask_stack )// array got shrunk and trimmed out this port, so just make sure this gets put into DHT_without_ISR_port_pinmask_stack_array
-//    previous_DHT_without_ISR_port_pinmask_stack_array
-/* */
-/* */
-
-
-
-
-
-//For debugging only
-//  eligible_devices_this_port = B10;  this bit on PORTD causes extraneous character to go out on serial line
-//eligible_devices_this_port = B11111101;
-//        if ( ( char )( port_index + 64 ) == 'D' ) eligible_devices_this_port = 0;
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "PORT" ) );
-        Serial.print( ( char )( port_index+64 ) );
-        Serial.print( F( ", valid_pins_this_port = " ) );
-        Serial.print( valid_pins_this_port, BIN );    //move these lines around in testing.  It does cause timing delays that will cause the remainder of timing-critical code to fail
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        delay( 100 );
-        Serial.flush();
-        Serial.end();
-*/
-
-
-
-
-
-
-
-
-/* 
-//if ( ( char )( port_index + 64 ) == 'D' ) Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( ( char )( port_index + 64 ) );
-//Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-//Serial.print( F( ", where is found >" ) );
-//Serial.print( ports_string_[ this_port_index_in_order_of_discovery_traversing_pins * 2 ] );
-//Serial.print( F( " that translates to >" ) );
-//Serial.println( ( u8 )( ports_string_[ this_port_index_in_order_of_discovery_traversing_pins * 2 ] - 64 ) );
-
-*/
-/*
-//        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( ": pin presences: " ) );
-        Serial.print( eligible_devices_this_port, BIN );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-//          delay( 100 );
-        Serial.flush();
-        Serial.end();
-*/
-//    eligible_devices_this_port = B10101010;
-/*
-    for ( u8 pin = 0; pin < NUM_DIGITAL_PINS; pin++ ) //See if pin is serviced by an ISR( PCINTn_vect ).  Build port masks and PCMSK, PCICR masks.  Skip unsafe pins
-    { 
-        for ( u8 f = 0; f < sizeof( pins_NOT_safe_even_to_make_low_Z_during_testing ); f++ )
-        { 
-            if ( pin == pins_NOT_safe_even_to_make_low_Z_during_testing[ f ] && digitalPinToPort( pin ) == port_index )
-            { 
-                eligible_devices_this_port &= ~digitalPinToBitMask( pin );
-            }
-        }
-    
-    
-        for ( u8 f = 0; f < sizeof( pins_NOT_safe_to_toggle_during_testing ); f++ )
-        { 
-            if ( pin == pins_NOT_safe_to_toggle_during_testing[ f ] && digitalPinToPort( pin ) == port_index )
-            { 
-                eligible_devices_this_port &= ~digitalPinToBitMask( pin );
-            }
-        }
-    }
-    */
-//    byte* safe_to_test_for_eligible_devices_pins_this_port = &safe_to_test_for_eligible_devices_pins_mask_this_port[ this_port_index_in_order_of_discovery_traversing_pins ];
-//    byte* eligible_devices_this_port = &eligible_DHT_devices_mask_this_port[ this_port_index_in_order_of_discovery_traversing_pins ];
-//    if ( eligible_devices_this_port != 0 ) numOfPortsWithAnyDHTDevice--;  
-    /*
-    digitalPinToPort( pin ) only gives us an index to the port in the port array
-    
-    THE PORT ADDRESSES ARE
-    portOutputRegister( digitalPinToPort( pin ) ) gives address of PORTx port ( or primary register, if you'd like )
-    
-    THE DDR REGISTER ADDRESSES ARE
-    portModeRegister( digitalPinToPort( pin ) ) gives a DDRx register address
-    
-    THE PINx REGISTER ADDRESSES ARE
-    portInputRegister( digitalPinToPort( pin ) ) gives a PINx register address
-    
-    digitalPinToBitMask( pin ) gives index of the mask on the port for the pin.  Cast it as BIN for real mask
-    
-     */
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-*/
-/*
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "Entered findalldhts for PORT" ) );
-Serial.print( ( char )( port_index + 64 ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( ", where is found >" ) );
-Serial.print( ports_string_[ this_port_index_in_order_of_discovery_traversing_pins * 2 ] );
-Serial.print( F( " that translates to >" ) );
-Serial.println( ( u8 )( ports_string_[ this_port_index_in_order_of_discovery_traversing_pins * 2 ] - 64 ) );
- */
-/*            delay( 100 );
-            Serial.flush();
-            Serial.end();
-*/
-//    delay( 500 );
-/* 
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( F( "PORT" ) );
-    Serial.print( ( char )( port_index+64 ) );
-    Serial.print( F( ", starting eligible_devices_this_port = " ) );
-    Serial.print( eligible_devices_this_port,BIN );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.flush();
-    Serial.end();
- */
     u8 i;
-    //if any device on this port is in its resting period, we need to wait before continuing with this routine!!!
-//    if ( port_resttime[ port_index ] != 0 ) //This wait time is only port-specific dealing with non-ISR code, not device-specific ISR-related.  The ISR code needs to check this variable before starting device communications on this port
-//    { 
-//        while ( ( millis() - port_resttime[ port_index ] < 2010 ) & ( millis() > port_resttime[ port_index ] ) ); //This time window needs to be adjustable upward depending on the device's needs
-//    }
     //save the state of this port, pin directions and pullup or not and state ( if output ), restore when leaving
     byte startstate_port = *port_;// & valid_pins_this_port; //The AND boolean operation is done to mask out bits that don't have pins for them
     byte startstate_portreg = *portreg_;// & valid_pins_this_port;
     byte startstate_pinreg = *pinreg_;// & valid_pins_this_port;
-//if ( ( char )( port_index + 64 ) == 'D' )  goto this_port_done_for_dht_detection;
-    //Find the clock rate: 
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-*/
-/*    Serial.print( F( "F_CPU = " ) );
-    Serial.print( F_CPU,DEC );
-    Serial.print( F( " ( Hz ), " ) );
-    Serial.print( F_CPU );
-    Serial.println( F( " ( Hz ) in native" ) );
-    Serial.print( F( "1,000,000/F_CPU = " ) );
-    Serial.print( ( 1000000.0/( float )F_CPU ),4 ); //after 4, all zeros
-    Serial.println( F( " ( usec )" ) );
-*/
-/*            delay( 100 );
-            Serial.flush();
-            Serial.end();
-*/
-//DO we need two different masks for protecting pins?
-//    eligible_devices_this_port &= *safe_to_test_for_eligible_devices_pins_this_port;
-
-/* 
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( " eligible_devices_this_port = " ) );
-        Serial.print( eligible_devices_this_port, BIN );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
- */
     if ( !( bool ) eligible_devices_this_port ) goto this_port_done_for_dht_detection;//This should never happen here in real life because such a port wouldn't even get in the ISR_WITH_DHT_port_pinmask_stack_array array
     
     *portreg_ |= eligible_devices_this_port; //Make safe and eligible pins into outputs
-//    *port_ |= eligible_devices_this_port; // set output pins HIGH for 2 seconds that are still eligible
-//    delay( 2000 ); //place these two lines in a loop prior to this function to catch all ports with a single 2 second delay
     *port_ &= ~( eligible_devices_this_port ); // set output pins LOW that are still eligible
 /* The following Serial object is needed to stay open here like this in order to prevent extraneous characters from going out on the serial line */
-/*        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-*/
         delay( 19 );
-
+ 
     // Here begins timing-critical code in this routine: From here to the end of timing-critical code, any changes you make to this established code result in untested timing
-
     *port_ = eligible_devices_this_port; // set eligible pins HIGH, still outputs
     eligible_devices_this_port &= *pinreg_;  //disqualify eligible lines that aren't high. 
     if ( !( bool ) eligible_devices_this_port ) goto this_port_done_for_dht_detection;
@@ -2032,117 +1679,22 @@ Serial.println( ( u8 )( ports_string_[ this_port_index_in_order_of_discovery_tra
     turnover_reference_time = micros();
     eligible_devices_this_port &= *pinreg_;  //disqualify eligible lines that aren't high. All pins that stayed high with pullups are eligible candidates
     if ( !( bool ) eligible_devices_this_port ) goto this_port_done_for_dht_detection;
-//    while ( micros() - turnover_reference_time < mid_bit_start_bit_low_checktime ); // device responds in reality by 8 u-sec going low ( data sheets say 20-40 uSec ).  This adds plenty of margin.
     while ( micros() - turnover_reference_time < 34 ); // device responds in reality by 8 u-sec going low ( data sheets say 20-40 uSec ).  This adds plenty of margin.
-//    while ( micros() - turnover_reference_time < 40 ); // device responds in reality by 8 u-sec going low ( data sheets say 20-40 uSec ).  This adds plenty of margin.
     eligible_devices_this_port &= ~( *pinreg_ );  //disqualify eligible lines that aren't low
-/* 
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( " eligible_devices_this_port = " ) );
-        Serial.print( eligible_devices_this_port, BIN );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
- */
     if ( !( bool ) eligible_devices_this_port ) goto this_port_done_for_dht_detection;
-//    while ( micros() - turnover_reference_time < mid_bit_start_bit_high_checktime ); // device responds by 128 u-sec with good margin in time
     while ( micros() - turnover_reference_time < 118 ); // device responds by 128 u-sec with good margin in time
     eligible_devices_this_port &= *pinreg_; //HIGHs on eligible pins maintain eligibility
-
-
 // Endpoint of timing-critical code
-/* 
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "eligible_devices_this_port = " ) );
-//Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( eligible_devices_this_port, BIN );Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-//delay( 100 );*/
-//    discover_port_order_and_populate_pin_port_mask();
-this_port_done_for_dht_detection:
-/* */
-//    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-//    Serial.setTimeout( 10 ); //
-//    while ( !Serial ) { 
-//      ; // wait for serial port to connect. Needed for Leonardo's native USB
-//    }
-/* 
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( F( "PORT" ) );
-    Serial.print( ( char )( port_index+64 ) );
-//    Serial.print( F( ": *portreg_ = " ) );
-//    Serial.print( *portreg_,BIN );
-*/
-    *portreg_ = startstate_portreg | eligible_devices_this_port;  //Restore ports to inputs or outputs except that where devices were found become outputs regardless
-/*
-//    Serial.print( F( ", restored to " ) );
-//    Serial.print( *portreg_,BIN );
-//    Serial.print( F( ": *port_ = " ) );
-//    Serial.print( *port_,BIN );
-//        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-//        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( F( ", ending eligible_devices_this_port = " ) );
-    Serial.print( eligible_devices_this_port,BIN );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
- */
-//
-// Is this really a good idea here instead of after finding ISR data?
-    *port_ = startstate_port & ~( eligible_devices_this_port ); // set output pins LOW that are still eligible CAUSE EXTRANEOUS SYMBOLS TO APPEAR ON SERIAL LINE
 
-/* 
-//    Serial.print( F( ", restored to " ) );
-//    Serial.print( *port_,BIN );
-//    Serial.print( F( ", startstate_port = " ) );
-//    Serial.print( startstate_port,BIN );
-//    Serial.print( F( "...eligible_devices_this_port = " ) );
-//    Serial.print( eligible_devices_this_port,BIN );
-//    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.flush();
-    Serial.end();
-*/
-//device_protocols; device_type_on_bit[ 
+ this_port_done_for_dht_detection:
+
+ *portreg_ = startstate_portreg | eligible_devices_this_port;  //Restore ports to inputs or outputs except that where devices were found become outputs regardless
+
+ *port_ = startstate_port & ~( eligible_devices_this_port ); // set output pins LOW that are still eligible CAUSE EXTRANEOUS SYMBOLS TO APPEAR ON SERIAL LINE
     if ( ( bool ) eligible_devices_this_port ) numOfPortsWithAnyDHTDevice++;
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-        Serial.println( F( "Clock rate OK, so DHT devices have been detected." ) );
-        Serial.flush();
-        Serial.end();
-*/
-
-
-//TODO:  Fix the following
-//    digitalWrite( LED_BUILTIN,0 );    //This line somehow does something not good as revealed by any serial print output that follows
-//TODO:  fix the previous line                                    //This was high to disable relays and whatnots so they don't get driven during the device detection process.  The circuitry for that is the end-user's responsibility
-
-
 //index needs to be changed to right one using a search
     return ( eligible_devices_this_port );
-//    on return of something, start the wait timer for all devices this entire port, 1 second for DHT 11, 2 seconds for all others
 }
-/*
- * 
-    free ( previous_ISR_WITH_DHT_port_pinmask_stack_array ); //Just as a matter of good practice, doesn't really do anything here
-    Elements_in = ( ELEMENTS_IN* )malloc( \
-        sizeof( ELEMENTS_IN ) + \
-        ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
-        ( sizeof( PORTSPEC ) * number_of_ports_found ) + \
-        ( sizeof( DHT_NO_ISR ) * NUM_DIGITAL_PINS ) + \
-        ( sizeof( PINSPEC ) * NUM_DIGITAL_PINS ) + \
-         0 + 0 \
-        )
-*/
 
 u8 Portspec_ready_port_index_adjust ( u8 portindex )
 {
@@ -2151,15 +1703,6 @@ u8 Portspec_ready_port_index_adjust ( u8 portindex )
 
 void delay_if_device_triggered( u8 pin )
 {
-/*
-//test lines:
-    pinMode( PIN_A0, OUTPUT );                                            
-    digitalWrite( PIN_A0, LOW );
-    delay( 26 );//on leonardo, test at 27 or more
-    digitalWrite( PIN_A0, HIGH );
-    pinMode( PIN_A0, INPUT );
-//done with test lines
-*/
     byte* port_ = ( byte* )portOutputRegister( digitalPinToPort( pin ) );
     byte* pinreg_ = ( byte* )portInputRegister( digitalPinToPort( pin ) );
     byte* portreg_ = ( byte* )portModeRegister( digitalPinToPort( pin ) );
@@ -2171,17 +1714,6 @@ void delay_if_device_triggered( u8 pin )
     { 
         if( !( bool )( *pinreg_ & digitalPinToBitMask( pin ) ) ) 
         { 
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-            Serial.print( F( "delay_if_device_triggered( () found a device on this pin.  Delaying 2 seconds" ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            Serial.flush();
-            Serial.end();
-*/
             delay( 2000 );//Allow time for any DHT device to settle down
         }
     }
@@ -2214,39 +1746,14 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A0() //default purpose for t
         digitalWrite( PIN_A0, HIGH );                                             //A test here for 1 MOhm resistor between pins A0 and LED_BUILTIN while led is high:  make A0 an output, take it low, make an analog input and read it for a high
 //
         return ( returnvalue );      //Will be 1 to 101 if connected to LED_BUILTIN through resistor
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-            Serial.print( F( "A resistor might not be connected between pins LED_BUILTIN and PIN_A0" ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            delay( 100 );
-            Serial.flush();
-            Serial.end();
-*/
     }
     else
     { 
         digitalWrite( LED_BUILTIN, LOW );                                        //A high was used to disable relays and whatnots so they don't get driven during the dht device detection process.  The circuitry for that is the end-user's responsibility
         pinMode( PIN_A0, OUTPUT );                                             
         digitalWrite( PIN_A0, HIGH );                                             //A test here for 1 MOhm resistor between pins A0 and LED_BUILTIN while led is high:  make A0 an output, take it low, make an analog input and read it for a high
-        //delay( 2000 );//Allow time for any DHT device to settle down
         return ( 0 );
     }
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "A resistor is definitely not connected between pins LED_BUILTIN and PIN_A0" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        delay( 1000 );
-        Serial.flush();
-        Serial.end();
-*/
 #endif
  }
 
@@ -2276,18 +1783,6 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A1()//default purpose for th
         pinMode( PIN_A1, OUTPUT );                                          
         digitalWrite( PIN_A1, HIGH );                                             //A test here for 1 MOhm resistor between pins A1 and LED_BUILTIN while led is high:  make A1 an output, take it low, make an analog input and read it for a high
         return ( returnvalue );      //Will be 1 to 101 if connected to LED_BUILTIN through resistor
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-            Serial.print( F( "A resistor might not be connected between pins LED_BUILTIN and PIN_A1" ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            delay( 100 );
-            Serial.flush();
-            Serial.end();
-*/
     }
     else
     { 
@@ -2297,18 +1792,6 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A1()//default purpose for th
         digitalWrite( LED_BUILTIN, LOW );                                        //A high was used to disable relays and whatnots so they don't get driven during the dht device detection process.  The circuitry for that is the end-user's responsibility
         return ( 0 );
     }
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "A resistor is definitely not connected between pins LED_BUILTIN and PIN_A1" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        delay( 1000 );
-        Serial.flush();
-        Serial.end();
-*/
 #endif
  }
 
@@ -2335,39 +1818,14 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A2()//default purpose for th
         pinMode( PIN_A2, OUTPUT );                                             
         digitalWrite( PIN_A2, HIGH );                                             //A test here for 1 MOhm resistor between pins A2 and LED_BUILTIN while led is high:  make A2 an output, take it low, make an analog input and read it for a high
         return ( returnvalue );      //Will be 1 to 101 if connected to LED_BUILTIN through resistor
-/*
-            Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-            Serial.setTimeout( 10 ); //
-            while ( !Serial ) { 
-              ; // wait for serial port to connect. Needed for Leonardo's native USB
-            }
-            Serial.print( F( "A resistor might not be connected between pins LED_BUILTIN and PIN_A2" ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-            delay( 100 );
-            Serial.flush();
-            Serial.end();
-*/
     }
     else
     { 
         pinMode( PIN_A2, OUTPUT );                                             
         digitalWrite( PIN_A2, HIGH );                                             //A test here for 1 MOhm resistor between pins A2 and LED_BUILTIN while led is high:  make A2 an output, take it low, make an analog input and read it for a high
-        //delay( 2000 );//Allow time for any DHT device to settle down
         digitalWrite( LED_BUILTIN, LOW );                                        //A high was used to disable relays and whatnots so they don't get driven during the dht device detection process.  The circuitry for that is the end-user's responsibility
         return ( 0 );
     }
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "A resistor is definitely not connected between pins LED_BUILTIN and PIN_A2" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        delay( 1000 );
-        Serial.flush();
-        Serial.end();
-*/
 #endif
  }
 
@@ -2375,66 +1833,10 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
 { 
   volatile u8 PCINT_pins_by_PCMSK_and_ISR[2][8][number_of_ISRs];
 
-// size of ISR_WITH_DHT_port_pinmask_stack_array at entry of this function the first time: 
-//number_of_ports_found
-//after that, this function can be called with a different value; namely, number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR
-
-/*
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.print( F( "Entering reset_ISR_findings_and_reprobe" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.flush();
-    Serial.end();
-*/
     digitalWrite( LED_BUILTIN,1 ); //This is to be used by the end user to disable relays and whatnots so they don't get driven during the device detection process.  The circuitry for that is the end-user's responsibility/discretion
-/* */
     u8 number_of_ports_that_responded_to_ISR_probing = 0;  //Needs to be calculated every time the ISR probing function is executed because pins forced by momentary low Z circuit faults could be overlooked as being serviced by ISRs
 // and because sparsing will require it
 
-//UNTESTED
-//ensure free on entering this function for number_of_ports_that_responded_to_ISR_probing
-/*
-    bool just_getting_number_of_ports_with_devices;
-    if ( number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR == 0 )
-    { 
-        just_getting_number_of_ports_with_devices = true;
-    }
-    else
-    { 
-        just_getting_number_of_ports_with_devices = false;
-        free( ptr_to_portspecs_stack );                                                                        //unmalloc the memory from the previous probing
-        ptr_to_portspecs_stack = ( port_specific* )malloc( sizeof( ptr_to_portspecs_stack ) * number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR );
-        if ( ptr_to_portspecs_stack == NULL ) return ( false );
-        if ( previous_ptr_to_portspecs_stack != NULL && previous_ptr_to_portspecs_stack != ptr_to_portspecs_stack )//  Entered state of possibility of memory fragmentation
-        { 
-            if ( previous_ptr_to_portspecs_stack < ptr_to_portspecs_stack ) mem_frag_alert();
-            else mem_defrag_alert();
-        }
-        number_of_elements_in_ISR_part_of_port_pinmask_stack = number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR;
-        previous_ptr_to_portspecs_stack = ptr_to_portspecs_stack;
-        number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR = 0;
-    }
-*/
-/* */
-    
-/*
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.print( F( "Entering reset_ISR_findings_and_reprobe" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.flush();
-    Serial.end();
-*/
-    
     for ( u8 i = 0; i < 2; i++ )
     { 
         for ( u8 j = 0; j < 8; j++ )
@@ -2453,18 +1855,14 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
     byte* ddraddr;            //u8 *
     byte* pinaddr;
     number_of_ports_that_responded_to_ISR_probing = 0;
-//    u8 pin; //Left in, this allowed false 0 value in var later
     u8 i;
     u8 ports_string_size = number_of_ports_found + 1; //ARD_TOTAL_PORTS + 1;
-//    if ( ARD_TOTAL_PORTS > 8 ) ports_string_size += ARD_TOTAL_PORTS - 8;
     char ports_with_ISRs_string[ ports_string_size ] { 0 }; //ARD_TOTAL_PORTS=11 make it 25, if=3 make it 6 ( ( ARD_TOTAL_PORTS * 2 )+( ARD_TOTAL_PORTS-8 if it is greater than 8 ) )
     char ISR_ports_with_DHTs_string[ ports_string_size ];
     char tmp_ports_under_test_string[ ports_string_size ] { 0 }; //ARD_TOTAL_PORTS=11 make it 25, if=3 make it 6 ( ( ARD_TOTAL_PORTS * 2 )+( ARD_TOTAL_PORTS-8 if it is greater than 8 ) )
-//    ports_string_ = ports_string;
     char portchar = { ' ' };
     char ISRindexchar = { ' ' };
     char ISRs_used_[ 4 ] = { "   " };
-//    char* ISRs_used_ = &ISRs_used_[ 0 ];
 
     PCICR = 0;
 
@@ -2551,20 +1949,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_devprot_index_this_ISR ) ;m++ )
             Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ m ] = 0;
     #endif
-/* 
-Isrspec[ 0 ].active_pin_ddr_port_reg_addr = 0;
-Isrspec[ 0 ].active_pin_output_port_reg_addr = 0;
-Isrspec[ 0 ].active_pin_pin_reg_addr = 0;
-Isrspec[ 0 ].index_in_PCMSK_of_current_device_within_ISR = 0;
-Isrspec[ 0 ].start_time_plus_max_acq_time_in_uSecs = 0;
-Isrspec[ 0 ].high_going_timestamp_micros = 0;
-Isrspec[ 0 ].next_bit_coming_from_dht = 0;
-Isrspec[ 0 ].timestamps[ 0 ] = 0;
-Isrspec[ 0 ].millis_rest_length = 0;
-Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ 0 ] = 0;
-Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR[ 0 ] = 0;
-Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
- */
     #ifdef PCMSK1
         PCMSK1 = 0;
         Isrspec[ 1 ].mask_by_PCMSK_of_real_pins = 0;
@@ -2647,19 +2031,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
             Isrspec[ 3 ].array_of_all_devprot_index_this_ISR[ m ] = 0;
     #endif
 #endif
-//Isrspec[ ].mask_by_PCMSK_of_valid_devices needs to get set here as well
-/*
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.print( F( "Entering reset_ISR_findings_and_reprobe" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.flush();
-    Serial.end();
-*/
     digitalWrite( LED_BUILTIN, HIGH );                                           //A high is used to disable relays and whatnots so they don't get driven during the dht device detection process.  The circuitry for that is the end-user's responsibility
     delay( 100 ); //Allow time for even a mechanical relay to operate
 
@@ -2670,116 +2041,11 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
     { //what we need is to set all real pins, skipping not_low_Z pins, to outputs while making the protected ones keep their level, safe ones be high.
 //Then end this for loop and start another to cycle through all pins, skipping the "unsafe for any reason" ones, making each safe pin low, then high and check for interrupt
 //After entire interrupt pins loop completed, pins with DHT devices on them need to be set to output, low.
-/*
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-    Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.print( F( "Pin " ) );
-    Serial.print( pins_NOT_safe_to_toggle_during_testing[ f ] );
-    Serial.print( F( ",1=Out, 0=In:" ) );
-//    Serial.print( F( " is starting as " ) );
-    Serial.print( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) );
-    Serial.print( F( ", level: " ) );
-    Serial.print( ( bool )( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) );
-*/
 //Store initial mode and state of semi-protected pins only
     pinmode[ f ] = ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \
     & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
     pinstate[ f ] = ( bool )( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
-//    if( pinmode[ f ] == OUTPUT ) continue;
-/*
-    if( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) )
-            { 
-                Serial.print( F( " Out" ) );
-                pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], OUTPUT ); //reinforce
-                pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], INPUT );  //Switch
-            }
-    else 
-    { 
-        Serial.print( F( " In" ) );
-        pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], INPUT ); //reinforce
-        pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], OUTPUT );  //Switch
     }
-
-//Verifying:
-    Serial.print( F( ":" ) );
-    Serial.print( F( " Switched: " ) );
-    Serial.print( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) );
-//    Serial.print( F( ", which is" ) );
-    if( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) )
-            { 
-                Serial.print( F( " Out" ) );
-            }
-    else 
-    { 
-        Serial.print( F( " In" ) );
-    }
-
-
-//    Serial.print( F( "put that reads" ) );
-    if( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) == HIGH )Serial.print( F( " HIGH ( " ) );
-    else Serial.print( F( " LOW ( " ) );
-    Serial.print( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
-
-//Verified by pinMode commands
-            
-    
-    Serial.print( F( " )-->" ) );
-*/
-//Change mode to OUTPUT only if pin is an INPUT, and keep the state
-//    digitalWrite( pins_NOT_safe_to_toggle_during_testing[ f ], pinstate[ f ] );
-//    pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], OUTPUT );
-//    digitalWrite( pins_NOT_safe_to_toggle_during_testing[ f ], pinstate[ f ] );
-/*
-    Serial.print( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) );
-//    Serial.print( F( ", which is" ) );
-    if( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) ) Serial.print( F( " Out" ) );
-    else Serial.print( F( " In" ) );
-//    Serial.print( F( "put that reads" ) );
-    if( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) == HIGH )Serial.print( F( " HIGH ( " ) );
-    else Serial.print( F( " LOW ( " ) );
-    Serial.print( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
-
-    Serial.print( F( " )-->" ) );
-
-    
-//    Serial.print( F( " ), and restored to " ) );
-//Change back to initial mode and state
-    if ( pinmode[ f ] == OUTPUT ) digitalWrite( pins_NOT_safe_to_toggle_during_testing[ f ], pinstate[ f ] );
-    Serial.print( pinmode[ f ] );
-    pinMode( pins_NOT_safe_to_toggle_during_testing[ f ], pinmode[ f ] ); //Is this the right level?
-    if( ( bool )( ( byte )*portModeRegister( digitalPinToPort( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) \ 
-            & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) ) ) Serial.print( F( " Out" ) );
-    else Serial.print( F( " In" ) );
-//    Serial.print( F( "put that reads " ) );
-    if( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) == HIGH )Serial.print( F( " HIGH ( " ) );
-    else Serial.print( F( " LOW ( " ) );
-    Serial.print( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
-    Serial.print( F( " )." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.flush();
-    Serial.end();
-    */
-    }
-
-
-/* 
-Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-Serial.setTimeout( 10 ); //
-while ( !Serial ) { 
-; // wait for serial port to connect. Needed for Leonardo's native USB
- } 
- */
-
     for ( u8 pin = 0; pin < NUM_DIGITAL_PINS; pin++ )
     {
         if ( !pin_NOT_safe_even_to_make_low_Z_during_testing( pin ) ) //should only check for membership in pins_NOT_safe_even_to_make_low_Z_during_testing
@@ -2787,64 +2053,28 @@ while ( !Serial ) {
             volatile u8* _portddr = portModeRegister( digitalPinToPort( pin ) );
             volatile u8* _port = portOutputRegister( digitalPinToPort( pin ) );
             bool pinlevel = ( bool ) ( *portInputRegister( digitalPinToPort( pin ) ) & digitalPinToBitMask( pin ) ); // store the level of the pin
-/* 
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-Serial.print( F( "For pin D" ) );
-Serial.print( pin );
-Serial.print( F( " PORT" ) );
-Serial.print( ( char ) ( digitalPinToPort( pin ) + 64 ) );
-Serial.print( F( " " ) );
-//Serial.print( F( " mask " ) );
-Serial.print( digitalPinToBitMask( pin ), BIN );
-Serial.print( F( ", IN levels in " ) );
-Serial.print( *portInputRegister( digitalPinToPort( pin ) ), BIN );
-//Serial.print( F( ", modes in " ) );
-//Serial.print( *_portddr, BIN );
-Serial.print( F( ", OUT levels in " ) );
-Serial.print( *_port, BIN );
-*/
-            if ( pinlevel )
+
+         if ( pinlevel )
             { 
-//              if ( pin == 56 ) Serial.print( *_port, BIN );  //set the pin to the level it reads
-//Serial.print( F( " HIGH " ) );
               *_port = *portInputRegister( digitalPinToPort( pin ) ) | digitalPinToBitMask( pin ); 
-//              if ( pin == 56 ) Serial.print( *_port, BIN );  //set the pin to the level it reads
             }
             else
             { 
-//Serial.print( F( " LOW " ) );
               *_port = *portInputRegister( digitalPinToPort( pin ) ) & ~digitalPinToBitMask( pin ); //set the pin to the level read before
             }
             *_portddr |= digitalPinToBitMask( pin ); //Makes the pin an output
             if ( pinlevel )
             { 
-//              if ( pin == 56 ) Serial.print( *_port, BIN );  //set the pin to the level it reads
-//Serial.print( F( " HIGH " ) );
               *_port = *portInputRegister( digitalPinToPort( pin ) ) | digitalPinToBitMask( pin ); 
-//              if ( pin == 56 ) Serial.print( *_port, BIN );  //set the pin to the level it reads
             }
             else
             { 
-//Serial.print( F( " LOW " ) );
               *_port = *portInputRegister( digitalPinToPort( pin ) ) & ~digitalPinToBitMask( pin ); //set the pin to the level read before
             }
-//Serial.print( F( ", IN levels out " ) );
-//Serial.print( *portInputRegister( digitalPinToPort( pin ) ), BIN );
-//Serial.print( F( ", modes out " ) );
-//Serial.print( *_portddr, BIN );
-//Serial.print( F( ", OUT levels out " ) );
-//Serial.print( *_port, BIN );
         }
     }
-/* 
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.flush();
-    Serial.end();
- */
     for ( u8 pin = 0; pin < NUM_DIGITAL_PINS; pin++ ) //See if pin is serviced by an ISR( PCINTn_vect ).  Build port masks and PCMSK, PCICR masks.  Skip unsafe pins
     {
-//delay( 2000 );//allow time for devices to settle down
-/* */
         byte original_port_levels;
             for ( u8 f = 0; f < sizeof( pins_NOT_safe_even_to_make_low_Z_during_testing ); f++ )
             { 
@@ -2863,40 +2093,12 @@ Serial.print( *_port, BIN );
                 }
             }
 //No variable instantiations allows from here until EndOfThisPin:
-/* */
-//        if ( ( digitalPinToPort( pin ) + 64 ) != 'B' ) goto EndOfThisPin;
-//        byte safemaskforportofthispinonly = 255;
-//        port_indexes_ddrmasks_and_pinlevels
-//        tmp_ports_under_test_string
         portaddr = ( byte* )portOutputRegister( digitalPinToPort( pin ) );
         ddraddr = ( byte* )portModeRegister( digitalPinToPort( pin ) );
         pinaddr = ( byte* )portInputRegister( digitalPinToPort( pin ) );
         portchar = ( char ) ( digitalPinToPort( pin ) + 64 );                        //Compute the alpha of the port
         original_port_levels = *pinaddr;
 
-//TESTING THE FOLLOWING LINE: ANDed with protected pins this port mask inverted
-//        *portaddr = mask_protected_pins_this_port( digitalPinToPort( pin ) );  //Needs to be 255 to prevent extraneous signals on adjacent lines from tripping interrupts.  This is empirical and admittedly does not address pins on different ports.
-//        *portaddr = 255;  //Needs to be 255 to prevent extraneous signals on adjacent lines from tripping interrupts.  This is empirical and admittedly does not address pins on different ports.
-
-
-
-        /*
-Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-Serial.setTimeout( 10 ); //
-while ( !Serial ) { 
-; // wait for serial port to connect. Needed for Leonardo's native USB
- } 
-Serial.print( F( "For pin " ) );
-Serial.println( pinStr );
-//( char ) ( digitalPinToPort( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ]-1 ) + 64 )
-Serial.print( F( " - on PORT" ) );
-Serial.print( portchar );
-Serial.print( F( " mask " ) );
-Serial.println( digitalPinToBitMask( pin ), BIN );
-delay( 50 );
-Serial.flush();
-Serial.end();
-*/
         for ( byte mask = 1; mask != 0; mask <<= 1 ) //PCICR != 4 || mask != 0;mask <<= 1 )
         {
             pmask = digitalPinToBitMask( pin );
@@ -2919,38 +2121,9 @@ Serial.end();
                 PCMSK3 = mask;
     #endif
 #endif
-//                    *ddraddr |= bit( digitalPinToBitMask( pin ) ); // PRBLM MIGHT BE...WHAT?
-//            pinMode( pin, OUTPUT );
 
                     *portaddr &= ~bit( digitalPinToBitMask( pin ) ); //makes pin low, but requires too much delay?  We're trying it again
-//            digitalWrite( pin, LOW ); //Make pin low plus evidently add some delay
             delayMicroseconds( 2 ); //Empirically determined.  Circuit capacitance could make this value insufficient.  Not needed for Leonardo but needed for Uno
-            
-//            if( ( bool ) *pinaddr & bit( digitalPinToBitMask( pin ) ) )
-//            { u8 bogus = 0;bogus++;
-/* 
-                Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-                Serial.setTimeout( 10 ); //
-                while ( !Serial ) { 
-                  ; // wait for serial port to connect. Needed for Leonardo's native USB
-                }
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.print( F( "Pin D" ) );
-                Serial.print( pin );
-                Serial.print( F( "'s PINx reads " ) );
-                Serial.print( *pinaddr, BIN );
-                Serial.print( F( ", " ) );
-                Serial.print( pmask,BIN );
-                Serial.print( F( " is the pin mask on the port" ) );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-//                Serial.print( F( "Pin D" ) );
-//                Serial.print( pin );
-//                Serial.print( F( " is not showing a LOW level when being so instructed.  A circuit short ( unintended physical contact between conductors ) is likely" ) );
-//                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.flush();
-                Serial.end();
- */
-//            }
 #ifdef PCMSK
             PCIFR |= B1;
     #ifdef PCMSK0 //The purpose of this entry is for rationale only, never expected to materialize
@@ -2991,49 +2164,13 @@ Serial.end();
             PCICR = B1111;
     #endif
 #endif
-//            PCICR = 7;
             *pinaddr = pmask; //toggle pin state
             delayMicroseconds( 20 ); //Empirically determined, value is dependent on circuit capacitance and required signal characteristics.
-//            if( digitalRead( pin ) != HIGH )
-//            { 
-/* 
-                Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-                Serial.setTimeout( 10 ); //
-                while ( !Serial ) { 
-                  ; // wait for serial port to connect. Needed for Leonardo's native USB
-                }
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.print( F( "Pin D" ) );
-                Serial.print( pin );
-                Serial.print( F( " " ) );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.flush();
-                Serial.end();
- */
-//
-//            }
 
             PCICR = 0;
             byte catchPCIs = PCIFR & B1111;
             PCIFR |= B1111;
             sei();
-/* 
-                Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-                Serial.setTimeout( 10 ); //
-                while ( !Serial ) { 
-                  ; // wait for serial port to connect. Needed for Leonardo's native USB
-                }
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.print( F( "PCMSK0 = " ) );
-                Serial.print( PCMSK0, BIN );
-                Serial.print( F( ", PCMSK1 = " ) );
-                Serial.print( PCMSK1, BIN );
-                Serial.print( F( ", PCMSK2 = " ) );
-                Serial.print( PCMSK2, BIN );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-                Serial.flush();
-                Serial.end();
- */
 //Put the pin levels back the way they were
                if ( ( bool ) ( original_port_levels | digitalPinToBitMask( pin ) ) )
             { 
@@ -3084,34 +2221,6 @@ Serial.end();
 // position_of_port_index = index of port in Portspec  
 //Save the port-pin mask of the pin to indicate this bitmask of this pin's port is served by an ISR
 //error with pin 66 struct is committed next line
-// ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array ) evaluates to 55 on pin 0.  TODO FIX
-/*
-Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-Serial.setTimeout( 10 ); //
-while ( !Serial );
-    for( u8 i = 0; i < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); i++ )
-        if( Devspec[ i ].Dpin == 66 ) 
-        {
-            for( u8 ij = 0; ij < sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device )/ sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device[ 0 ] ); ij++ )
-            {
-                Serial.print( pin );
-                Serial.print( F( ":" ) );
-                Serial.print( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                Serial.print( strchr( ports_string_in_heap_array, portchar ) );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                Serial.print( portchar );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                Serial.print( ports_string_in_heap_array );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-                Serial.print( F( "," ) );
-            }
-        }
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.flush();
-Serial.end();
-*/
-//            Portspec[ ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array ) ].PCINT_pins_mask |= digitalPinToBitMask( pin ); 
             cli(); //Atomic read: Because variables checked below could become multi-byte in an interruptable code environment in a later version.  Irrelevant in this specific version, but giving recognition to the fact anyway
 //Make the following into a function:
     #ifdef PCMSK
@@ -3306,15 +2415,8 @@ Serial.end();
     #endif
             sei();
 //Checks the DHT-found pins mask on this new-found ( previously unknown to be serviced by an ISR ) ISR-serviced port
-//                if ( ( bool ) ( Portspec[ ]. ) ] ) )
-//                if ( true )//temp line to allow compiling
-//                { //Here we either are getting the size for the array or already had the array started from knowing the size after the first run
-//                    ISR_ports_with_DHTs_string[ number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR++ ] = portchar;                       //Only fill this if dht devices are found on it?
-//                    ISR_ports_with_DHTs_string[ number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR ] = 0;
 intcatchdone:;
             cli();                                                  // If stopping all interrupts like this becomes problematic, we'll instead monitor what the ISRs do to the portspec array
-//                    Serial.flush();
-//                    Serial.end();
             //All Interrupt "ears" open for any activated DHT devices to be noticed
 #ifdef PCMSK
             PCICR = B1;
@@ -3342,7 +2444,6 @@ intcatchdone:;
     #endif
 #endif
             delayMicroseconds( 270 ); //allow enough time for any activated DHT devices to send their next bit transition
-//            catchPCIs = PCIFR & 15;
             while( PCIFR & 15 != 0 )
             { //If any DHT devices were hit, wait here until they stop transmitting.  Each bit will be less than 190 uS
                 PCIFR |= B1111;
@@ -3457,8 +2558,6 @@ EndOfThisPin:;
                         Serial.print( F( " and on D" ) );
                     Serial.print( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ j ] - 1 );
                     Serial.print( F( " " ) );
-//                    Serial.print( F( ". Pinxref->PIN_xref[ PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 ] = " ) );
-//                    Serial.print( Pinxref->PIN_xref[ PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 ] );
                     print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ j ] - 1 );
                     Serial.print( F( " ( port PORT" ) );
                     Serial.print( ( char ) ( digitalPinToPort( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ j ] - 1 ) + 64 ) );
@@ -3472,19 +2571,11 @@ EndOfThisPin:;
                 { 
                     Serial.print( F( "!" ) );
                     any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( j ),BIN );
                 }
                 if( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 ) != i )
                 { 
                     Serial.print( F( "*" ) );
                     any_wrong_digitalPinToPCMSKbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCMSKbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( i ),BIN );
                 }
             }
             else Serial.print( F( "No PCINT-to-pin connection or the supported pin is declared protected" ) );
@@ -3526,15 +2617,10 @@ EndOfThisPin:;
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] < 101 ) Serial.print( F( " " ) );
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] < 11 ) Serial.print( F( " " ) );
             print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] - 1 );
-//            Serial.print( F( " - " ) );
             if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] - 1 ) != 0 )
             { 
                 Serial.print( F( "!" ) );
                 any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( 0 ),BIN );
             }
             else Serial.print( F( " " ) );
             if    ( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 0 ] - 1 ) != i )
@@ -3557,20 +2643,14 @@ EndOfThisPin:;
             if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] ) 
             { 
                 Serial.print( F( " and D" ) );
-//                Serial.print( digitalPinToPCMSKbit[ 1 ][ i ][ 0 ] - 1 ); 
                 Serial.print( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 ); 
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] < 101 ) Serial.print( F( " " ) );
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] < 11 ) Serial.print( F( " " ) );
                 print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 );
-//                Serial.print( F( " - " ) );
                 if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 ) != 0 )
                 { 
                     Serial.print( F( "!" ) );
                     any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( 0 ),BIN );
                 }
                 else Serial.print( F( " " ) );
                 if    ( i != digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 ) )
@@ -3579,7 +2659,6 @@ EndOfThisPin:;
                     any_wrong_digitalPinToPCMSKbit_reports = true;
                 }
                 else Serial.print( F( " " ) );
-//                Serial.print( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 0 ] - 1 ) );
                 Serial.print( F( "    " ) );
             }
             else
@@ -3598,15 +2677,10 @@ EndOfThisPin:;
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] < 101 ) Serial.print( F( " " ) );
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] < 11 ) Serial.print( F( " " ) );
             print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] - 1 );
-//            Serial.print( F( " - " ) );
             if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] - 1 ) != 1 )
             { 
                 Serial.print( F( "!" ) );
                 any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( 1 ),BIN );
             }
             else Serial.print( F( " " ) );
             if    ( i != digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 1 ] - 1 ) )
@@ -3633,15 +2707,10 @@ EndOfThisPin:;
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] < 101 ) Serial.print( F( " " ) );
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] < 11 ) Serial.print( F( " " ) );
                 print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] - 1 );
-//                Serial.print( F( " - " ) );
                 if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] - 1 ) != 1 )
                 { 
                     Serial.print( F( "!" ) );
                     any_wrong_digitalPinToPCICRbit_reports = true;
-    //                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-    //                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] - 1 ) ),BIN );
-    //                    Serial.print( F( ". Correct value is " ) );
-    //                    Serial.print( bit( 1 ),BIN );
                 }
                 else Serial.print( F( " " ) );
                 if    ( i != digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] - 1 ) )
@@ -3650,7 +2719,6 @@ EndOfThisPin:;
                     any_wrong_digitalPinToPCMSKbit_reports = true;
                 }
                 else Serial.print( F( " " ) );
-//                Serial.print( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 1 ] - 1 ) );
                 Serial.print( F( "    " ) );
             }
             else
@@ -3667,15 +2735,10 @@ EndOfThisPin:;
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] < 101 ) Serial.print( F( " " ) );
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] < 11 ) Serial.print( F( " " ) );
             print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] - 1 );
-//            Serial.print( F( " - " ) );
             if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] - 1 ) != 2 )
             { 
                 Serial.print( F( "!" ) );
                 any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( 2 ),BIN );
             }
             else Serial.print( F( " " ) );
             if    ( i != digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 2 ] - 1 ) )
@@ -3702,15 +2765,10 @@ EndOfThisPin:;
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] < 101 ) Serial.print( F( " " ) );
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] < 11 ) Serial.print( F( " " ) );
                 print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] - 1 );
-//                Serial.print( F( " - " ) );
                 if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] - 1 ) != 2 )
                 { 
                     Serial.print( F( "!" ) );
                     any_wrong_digitalPinToPCICRbit_reports = true;
-    //                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-    //                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] - 1 ) ),BIN );
-    //                    Serial.print( F( ". Correct value is " ) );
-    //                    Serial.print( bit( 2 ),BIN );
                 }
                 else Serial.print( F( " " ) );
                 if    ( i != digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] - 1 ) )
@@ -3720,7 +2778,6 @@ EndOfThisPin:;
                 }
                 else Serial.print( F( " " ) );
                 Serial.print( F( "    " ) );
-//                Serial.print( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 2 ] - 1 ) );
             }
             else
                     Serial.print( F( "              " ) );
@@ -3736,15 +2793,10 @@ EndOfThisPin:;
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ] < 101 ) Serial.print( F( " " ) );
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ] < 11 ) Serial.print( F( " " ) );
             print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ]-1 );
-//            Serial.print( F( " - " ) );
             if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ] - 1 ) != 3 )
             { 
                 Serial.print( F( "!" ) );
                 any_wrong_digitalPinToPCICRbit_reports = true;
-//                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-//                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ] - 1 ) ),BIN );
-//                    Serial.print( F( ". Correct value is " ) );
-//                    Serial.print( bit( 3 ),BIN );
             }
             else Serial.print( F( " " ) );
             if    ( i != digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ 3 ] - 1 ) )
@@ -3771,15 +2823,10 @@ EndOfThisPin:;
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] < 101 ) Serial.print( F( " " ) );
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] < 11 ) Serial.print( F( " " ) );
                 print_analog_if_exists( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] - 1 );
-//                Serial.print( F( " - " ) );
                 if( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] - 1 ) != 3 )
                 { 
                     Serial.print( F( "!" ) );
                     any_wrong_digitalPinToPCICRbit_reports = true;
-    //                    Serial.print( F( ", digitalPinToPCICRbit being reported wrong by macro as " ) );
-    //                    Serial.print( bit( digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] - 1 ) ),BIN );
-    //                    Serial.print( F( ". Correct value is " ) );
-    //                    Serial.print( bit( 3 ),BIN );
                 }
                 else Serial.print( F( " " ) );
                 if    ( i != digitalPinToPCICRbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] - 1 ) )
@@ -3789,13 +2836,9 @@ EndOfThisPin:;
                 }
                 else Serial.print( F( " " ) );
                 Serial.print( F( "    " ) );
-//                Serial.print( digitalPinToPCMSKbit( PCINT_pins_by_PCMSK_and_ISR[ 1 ][ i ][ 3 ] - 1 ) );
             }
             else
                 Serial.print( F( "   " ) );
-//            if ( Isrspec[ 3 ].mask_by_PCMSK_of_valid_devices
-//            else Serial.print( F( "              " ) );
-//            Serial.print( F( "      " ) );
         }
         else Serial.print( F( "---" ) );
 #endif
@@ -3813,41 +2856,6 @@ EndOfThisPin:;
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
     }
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-
-    
-/*
-    
-    for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
-    {
-        Serial.print( Devspec[ devspec_index ].Dpin );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    }
-*/
-//    Serial.print( F( "ports_with_ISRs_string = " ) );
-//    Serial.print( ports_with_ISRs_string );
-//    strcpy( scratchpad, ports_with_ISRs_string );
-//    scratchpad[ strchr( ports_with_ISRs_string, 0 ) - &ports_with_ISRs_string[ 0 ] ] = 0;
-//    Serial.print( F( ", scratchpad = " ) );
-//    Serial.print( scratchpad );
-//    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-/* every element is populated: unsparsed */
-/*
-    for( u8 pin = 0; pin < NUM_DIGITAL_PINS; pin++ )
-    {
-        Serial.print( Pinxref->PIN_xref[ pin ] );
-        Serial.print( F( ": " ) );
-//        Serial.print( Devspec[ Pinxref->PIN_xref[ pin ] ].Dpin );
-//        Serial.print( F( ", " ) );
-//        Serial.print( Devspec[ Pinxref->PIN_xref[ pin ] ].next_bit_coming_from_dht );
-//        Serial.print( F( ", " ) );
-//        Serial.print( Devspec[ Pinxref->PIN_xref[ pin ] ].devprot_index );
-//        Serial.print( F( ", " ) );
-//        Serial.print( Devspec[ Pinxref->PIN_xref[ pin ] ].portspec_index_for_pin );
-//        Serial.print( F( ", " ) );
-        Serial.print( Devspec[ Pinxref->PIN_xref[ pin ] ].devprot_index );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    }
- */
     Serial.flush();
     Serial.end();
 //WE FINALLY KNOW HOW MANY DHT DEVICES SERVED BY ISR THERE ARE.  MAKE AN ARRAY OF THEM WITH A XREF ARRAY
@@ -3877,30 +2885,6 @@ EndOfThisPin:;
  * The ISR list starts in ISR index order for the purpose of ISR discovery, but must end up different as well.  It won't be in pick order necessarily, 
  * but holes in the index continuum for ISRs must be removed and thereafter ISR indexes will be decreased
  * 
- */
- /* 
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "line 2302" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
- */
-    
-//    if( Elements_in == NULL ) return ( false );
-/* 
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( F( "line 2312" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
  */
 //ELEMENTS_IN structure holds the following elements, each storing the number of elements in an array of types, for all the various arrays
 /* 
@@ -3989,50 +2973,8 @@ byte* previous_DHT_without_ISR_port_pinmask_stack_array = NULL; //ptr to locatio
     }
 */
 
-/*
-Serial.print( F( "Reading temp storage back:" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-*/
-/*
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * The following is not getting completed correctly
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */
-//debugging delay, remove if able to later
-/*
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "Line 2403" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
-*/
-
-//    delay( 100 );
-//    unsigned short sparsecheck = resistor_between_LED_BUILTIN_and_PIN_A1();
-//    if ( sparsecheck > 0 && sparsecheck < 101 )
-//        compact_the_heap( true );
     return ( true );
-}// EDITOR IS WRONG ABOUT SHOWING THIS B/C IT DOESN'T KNOW OUTCOME OF IFDEFs
+}// EDITOR IS WRONG ABOUT SHOWING THIS B/C IT DOESN'T AND CAN'T KNOW OUTCOME OF IFDEFs
 
 
 void setup() {
@@ -4112,14 +3054,8 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.flush();
     Serial.end();
-/* */
-//Leonardo has 2344 bytes of free 
-//ram here in unsparsed model
-//Mega 2560 has 7904 bytes of free ram here in unsparsed model
-//UNO has 1761 bytes of free ram here in unsparsed model: as follows
-//Sketch uses 28810 bytes (89%) of program storage space. Maximum is 32256 bytes.
-//Global variables use 379 bytes (18%) of dynamic memory, leaving 1669 bytes for local variables. Maximum is 2048 bytes.
-    unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
+
+ unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
     if ( wincheck > 0 && wincheck < 101 ) mswindows = true ; else mswindows = false;
     build_from_nothing();
     delay( 2000 );
@@ -4261,10 +3197,6 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
         }
         else if( atoi( receivedChars ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) )
         {
-    //        Serial.print("This just in ... ");
-    //        Serial.println( atoi( receivedChars ) );
-    //        Serial.print( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) );
-    //        Serial.print( F( " " ) );
             this_Devspec_address = &Devspec[ atoi( receivedChars ) ];
             tmp_sandbox;
             filled_vals = 0;
