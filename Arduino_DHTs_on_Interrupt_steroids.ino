@@ -790,7 +790,6 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
         for( u8 ij = 0; ij < sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device )/ sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device[ 0 ] ); ij++ )
             Devspec[ i ].last_valid_data_bytes_from_dht_device[ ij ] = 0;
         Devspec[ i ].timestamp_of_pin_valid_data_millis = 0;
-        Devspec[ i ].next_bit_coming_from_dht = 0;
         Devspec[ i ].devprot_index = 0;
         Devspec[ i ].high_going_timestamp_micros = 0;
         Devspec[ i ].consecutive_read_failures = 0;
