@@ -65,7 +65,7 @@ ISR( TIMER0_COMPA_vect )
                 }
             }
 //Check for device needing to be read
-    this_Isrspec_address = Isrxref->my_isr_addr[ ISR_index_in_isr ];
+    this_Isrspec_address = Isrxref->my_isrspec_addr[ ISR_index_in_isr ];
     if( this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] )
     {
         this_Devspec_address = &Devspec[ this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] - 1 ];
@@ -427,7 +427,7 @@ high_going_timestamp[this_port_index_in_order_of_discovery_traversing_pins] = mi
 */
 }
 #endif
-#if defined (PCMSK0) && defined (PCMSK)
+#if defined ( PCMSK0 ) && defined ( PCMSK )
 volatile u8* indexwisePCMSK0;
 ISR( PCINT0_vect )
 {
@@ -441,7 +441,7 @@ ISR( PCINT0_vect )
 volatile u8* indexwisePCMSK0;
 ISR( PCINT0_vect )
 {//APPEARS TO TAKE 84 uSec up to 28 uSec more
-    ISRSPEC* this_Isrspec_address = Isrxref->my_isr_addr[ 0 ];
+    ISRSPEC* this_Isrspec_address = isrspec_addr0;
     //if( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR )//Rising edge.This for 43 transitions if the first is caught like it should be if Arduino not too busy.  Useful for testing timing margin if can catch that first rising edge! Should be 96 uSec.
     if( !( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR ) )//Falling edge.This for 42 transitions, lenient on first one, useful for operational robustness.  Need to adjust dht_max_transitions_for_valid_acquisition_stream for changing this
     {
@@ -477,7 +477,7 @@ ISR( PCINT0_vect )
 
 ISR( PCINT1_vect )
 {
-    ISRSPEC* this_Isrspec_address = Isrxref->my_isr_addr[ 1 ];
+    ISRSPEC* this_Isrspec_address = isrspec_addr1;
     //if( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR )//Rising edge.This for 43 transitions if the first is caught like it should be if Arduino not too busy.  Useful for testing timing margin if can catch that first rising edge! Should be 96 uSec.
     if( !( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR ) )//Falling edge.This for 42 transitions, lenient on first one, useful for operational robustness.  Need to adjust dht_max_transitions_for_valid_acquisition_stream for changing this
     {
@@ -510,7 +510,7 @@ ISR( PCINT1_vect )
 //
 ISR( PCINT2_vect )
 {
-    ISRSPEC* this_Isrspec_address = Isrxref->my_isr_addr[ 2 ];
+    ISRSPEC* this_Isrspec_address = isrspec_addr2;
     //if( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR )//Rising edge.This for 43 transitions if the first is caught like it should be if Arduino not too busy.  Useful for testing timing margin if can catch that first rising edge! Should be 96 uSec.
     if( !( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR ) )//Falling edge.This for 42 transitions, lenient on first one, useful for operational robustness.  Need to adjust dht_max_transitions_for_valid_acquisition_stream for changing this
     {
@@ -540,9 +540,9 @@ ISR( PCINT2_vect )
 // ISR0, 62-69 are ISR2
 //Mega do not use ports C and D, Use J and K (and B)
 //
-ISR(PCINT3_vect)
+ISR( PCINT3_vect )
 {
-    ISRSPEC* this_Isrspec_address = Isrxref->my_isr_addr[ 3 ];
+    ISRSPEC* this_Isrspec_address = isrspec_addr3;
     //if( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR )//Rising edge.This for 43 transitions if the first is caught like it should be if Arduino not too busy.  Useful for testing timing margin if can catch that first rising edge! Should be 96 uSec.
     if( !( *this_Isrspec_address->active_pin_pin_reg_addr & this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR ) )//Falling edge.This for 42 transitions, lenient on first one, useful for operational robustness.  Need to adjust dht_max_transitions_for_valid_acquisition_stream for changing this
     {
