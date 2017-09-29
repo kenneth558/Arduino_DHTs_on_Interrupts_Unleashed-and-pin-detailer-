@@ -820,7 +820,7 @@ DEVSPEC* Devspec;
         while ( !Serial ) { 
           ; // wait for serial port to connect. Needed for Leonardo's native USB
         }
-        Serial.print( F( "Line 1876, device_busy_resting_until_this_system_millis getting assigned" ) );
+        Serial.print( F( "Line 1876, device_busy_resting_this_more_millis getting assigned" ) );
 //        Serial.print( number_of_devices_found );
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 
@@ -851,20 +851,19 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
             Devspec[ i ].last_valid_data_bytes_from_dht_device[ ij ] = 0;
         Devspec[ i ].timestamp_of_pin_valid_data_millis = 0;
         Devspec[ i ].devprot_index = 0;
-        Devspec[ i ].high_going_timestamp_micros = 0;
         Devspec[ i ].consecutive_read_failures = 0;
         Devspec[ i ].consecutive_read_successes = 0;
         Devspec[ i ].start_time_plus_max_acq_time_in_uSecs = 0;
         long unsigned timenow = millis();//A single point of reference to prevent changing during the following
-        Devspec[ i ].device_busy_resting_until_this_system_millis = Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
-        //          Devspec[ i ].device_busy_resting_until_this_system_millis = timenow + Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
-        Devspec[ i ].millis_will_overflow = false;
-        Devspec[ i ].micros_will_overflow = false;
-        if( !Devspec[ i ].device_busy_resting_until_this_system_millis )
+        Devspec[ i ].device_busy_resting_this_more_millis = Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
+        //          Devspec[ i ].device_busy_resting_this_more_millis = timenow + Devprot[ Devspec[ i ].devprot_index ].millis_rest_length;
+//        Devspec[ i ].millis_will_overflow = false;
+//        Devspec[ i ].micros_will_overflow = false;
+        if( !Devspec[ i ].device_busy_resting_this_more_millis )
         {
-          Devspec[ i ].device_busy_resting_until_this_system_millis++; //zero is not a valid value unless device is rested
+          Devspec[ i ].device_busy_resting_this_more_millis++; //zero is not a valid value unless device is rested
         }
-        if( Devspec[ i ].device_busy_resting_until_this_system_millis < timenow ) Devspec[ i ].millis_will_overflow = true;
+//        if( Devspec[ i ].device_busy_resting_this_more_millis < timenow ) Devspec[ i ].millis_will_overflow = true;
         Devspec[ i ].mask_in_port = digitalPinToBitMask( pre_array_devspec_index[ i ] );
         Devspec[ i ].output_port_reg_addr = portOutputRegister( digitalPinToPort( Devspec[ i ].Dpin ) );
         Devspec[ i ].ddr_port_reg_addr = portModeRegister( digitalPinToPort( Devspec[ i ].Dpin ) );
@@ -873,7 +872,7 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
 /*
 Devspec[ i ].debug_PCICR = 0;
 Devspec[ i ].debug_pcmsk = 0;
-Devspec[ i ].debug_device_busy_resting_until_this_system_millis = 0;
+Devspec[ i ].debug_device_busy_resting_this_more_millis = 0;
 Devspec[ i ].debug_timestamp_of_pin_last_attempted_device_read_millis = 0;
 Devspec[ i ].debug_start_time_plus_max_acq_time_in_uSecs = 0;
 Devspec[ i ].debug_start_time_plus_max_acq_time_in_uSecs = 0;
@@ -898,7 +897,7 @@ Devspec[ i ].debug_ddr_b4 = 0;
             Devspec[ devspec_index[ i ] - 1 ].timestamp_of_pin_valid_data_millis = 0;
             Devspec[ devspec_index[ i ] - 1 ].timestamp_of_pin_last_attempted_device_read_millis = millis();
             Devspec[ devspec_index[ i ] - 1 ].next_bit_coming_from_dht = 0;
-            Devspec[ devspec_index[ i ] - 1 ].device_busy_resting_until_this_system_millis = millis() + 2000;
+            Devspec[ devspec_index[ i ] - 1 ].device_busy_resting_this_more_millis = millis() + 2000;
             Devspec[ devspec_index[ i ] - 1 ].millis_will_overflow = false;
             Devspec[ devspec_index[ i ] - 1 ].devprot_index = 1;
 //        }
@@ -929,8 +928,6 @@ delay( 2000 );//ensure all devices get a rest period right here
         Portspec[ fill_index_in_heap_proarray ].mask_of_DHT_devices_this_port = 0;
         Portspec[ fill_index_in_heap_proarray ].PCINT_pins_mask = 0;
         Portspec[ fill_index_in_heap_proarray ].timestamp_of_last_portwide_device_detection_action_by_thisport_micros = micros();
-//        Portspec[ fill_index_in_heap_proarray ].mask_of_resting_devices_pins = 0;
-//        Portspec[ fill_index_in_heap_proarray ].mask_of_resting_devices_pins = mask_of_resting_devices_pins;
         
 
         u8 l = 0;
@@ -949,7 +946,6 @@ delay( 2000 );//ensure all devices get a rest period right here
 //                    Serial.print( F( ", making " ) );
 //                Serial.print( Devspec[ l ].Dpin );
 //                Serial.print( F( " = " ) );
-                Devspec[ l ].portspec_index_for_pin = fill_index_in_heap_proarray;
 //                Serial.print( Devspec[ l ].portspec_index_for_pin );
             }
         }
@@ -2478,7 +2474,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
     Isrspec[ 0 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
     Isrspec[ 0 ].index_in_PCMSK_of_current_device_within_ISR = 0;
     Isrspec[ 0 ].start_time_plus_max_acq_time_in_uSecs = 0;
-    Isrspec[ 0 ].high_going_timestamp_micros = 0;
     Isrspec[ 0 ].next_bit_coming_from_dht = 255;
     Isrspec[ 0 ].timestamps[ 0 ] = 0;
     Isrspec[ 0 ].interval = 255;
@@ -2486,8 +2481,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
     Isrspec[ 0 ].val_tmp1 = ( unsigned short* )&Isrspec[ 0 ].sandbox_bytes[ 1 ];
     Isrspec[ 0 ].val_tmp2 = ( unsigned short* )&Isrspec[ 0 ].sandbox_bytes[ 3 ];
     Isrspec[ 0 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;//make obsolete?
-    for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR ) ;m++ )
-        Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
     for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
         Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
     for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -2505,7 +2498,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         Isrspec[ 1 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 1 ].index_in_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 1 ].start_time_plus_max_acq_time_in_uSecs = 0;
-        Isrspec[ 1 ].high_going_timestamp_micros = 0;
         Isrspec[ 1 ].next_bit_coming_from_dht = 255;
         Isrspec[ 1 ].timestamps[ 0 ] = 0;
         Isrspec[ 1 ].interval = 255;
@@ -2513,8 +2505,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         Isrspec[ 1 ].val_tmp1 = ( unsigned short* )&Isrspec[ 1 ].sandbox_bytes[ 1 ];
         Isrspec[ 1 ].val_tmp2 = ( unsigned short* )&Isrspec[ 1 ].sandbox_bytes[ 3 ];
         Isrspec[ 1 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;
-        for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR ) ;m++ )
-            Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
             Isrspec[ 1 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -2533,7 +2523,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         Isrspec[ 0 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 0 ].index_in_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 0 ].start_time_plus_max_acq_time_in_uSecs = 0;
-        Isrspec[ 0 ].high_going_timestamp_micros = 0;
         Isrspec[ 0 ].next_bit_coming_from_dht = 255;
         Isrspec[ 0 ].timestamps[ 0 ] = 0;
         Isrspec[ 0 ].interval = 255;
@@ -2541,8 +2530,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         Isrspec[ 0 ].val_tmp1 = ( unsigned short* )&Isrspec[ 0 ].sandbox_bytes[ 1 ];
         Isrspec[ 0 ].val_tmp2 = ( unsigned short* )&Isrspec[ 0 ].sandbox_bytes[ 3 ];
         Isrspec[ 0 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;
-        for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR ) ;m++ )
-            Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
             Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 0 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -2554,11 +2541,9 @@ Isrspec[ 0 ].active_pin_output_port_reg_addr = 0;
 Isrspec[ 0 ].active_pin_pin_reg_addr = 0;
 Isrspec[ 0 ].index_in_PCMSK_of_current_device_within_ISR = 0;
 Isrspec[ 0 ].start_time_plus_max_acq_time_in_uSecs = 0;
-Isrspec[ 0 ].high_going_timestamp_micros = 0;
 Isrspec[ 0 ].next_bit_coming_from_dht = 0;
 Isrspec[ 0 ].timestamps[ 0 ] = 0;
 Isrspec[ 0 ].millis_rest_length = 0;
-Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ 0 ] = 0;
 Isrspec[ 0 ].array_of_all_devspec_index_plus_1_this_ISR[ 0 ] = 0;
 Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
  */
@@ -2574,7 +2559,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 1 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 1 ].index_in_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 1 ].start_time_plus_max_acq_time_in_uSecs = 0;
-        Isrspec[ 1 ].high_going_timestamp_micros = 0;
         Isrspec[ 1 ].next_bit_coming_from_dht = 255;
         Isrspec[ 1 ].timestamps[ 0 ] = 0;
         Isrspec[ 1 ].interval = 255;
@@ -2582,8 +2566,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 1 ].val_tmp1 = ( unsigned short* )&Isrspec[ 1 ].sandbox_bytes[ 1 ];
         Isrspec[ 1 ].val_tmp2 = ( unsigned short* )&Isrspec[ 1 ].sandbox_bytes[ 3 ];
         Isrspec[ 1 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;
-        for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR ) / sizeof( Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR[ 0 ] );m++ )
-            Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
             Isrspec[ 1 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 1 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -2601,7 +2583,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 2 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 2 ].index_in_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 2 ].start_time_plus_max_acq_time_in_uSecs = 0;
-        Isrspec[ 2 ].high_going_timestamp_micros = 0;
         Isrspec[ 2 ].next_bit_coming_from_dht = 255;
         Isrspec[ 2 ].timestamps[ 0 ] = 0;
         Isrspec[ 2 ].interval = 255;
@@ -2609,8 +2590,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 2 ].val_tmp1 = ( unsigned short* )&Isrspec[ 2 ].sandbox_bytes[ 1 ];
         Isrspec[ 2 ].val_tmp2 = ( unsigned short* )&Isrspec[ 2 ].sandbox_bytes[ 3 ];
         Isrspec[ 2 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;
-        for( u8 m = 0;m < sizeof( Isrspec[ 2 ].array_of_all_pinnums_plus_one_this_ISR ) ;m++ )
-            Isrspec[ 2 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 2 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
             Isrspec[ 2 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 2 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -2628,7 +2607,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 3 ].mask_by_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 3 ].index_in_PCMSK_of_current_device_within_ISR = 0;
         Isrspec[ 3 ].start_time_plus_max_acq_time_in_uSecs = 0;
-        Isrspec[ 3 ].high_going_timestamp_micros = 0;
         Isrspec[ 3 ].next_bit_coming_from_dht = 255;
         Isrspec[ 3 ].timestamps[ 0 ] = 0;
         Isrspec[ 3 ].interval = 255;
@@ -2636,8 +2614,6 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
         Isrspec[ 3 ].val_tmp1 = ( unsigned short* )&Isrspec[ 3 ].sandbox_bytes[ 1 ];
         Isrspec[ 3 ].val_tmp2 = ( unsigned short* )&Isrspec[ 3 ].sandbox_bytes[ 3 ];
         Isrspec[ 3 ].millis_rest_length = Devprot[ 0 ].millis_rest_length;
-        for( u8 m = 0;m < sizeof( Isrspec[ 3 ].array_of_all_pinnums_plus_one_this_ISR ) ;m++ )
-            Isrspec[ 3 ].array_of_all_pinnums_plus_one_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 3 ].array_of_all_devspec_index_plus_1_this_ISR ) ;m++ )
             Isrspec[ 3 ].array_of_all_devspec_index_plus_1_this_ISR[ m ] = 0;
         for( u8 m = 0;m < sizeof( Isrspec[ 3 ].array_of_all_devprot_index_this_ISR ) ;m++ )
@@ -3047,7 +3023,7 @@ Serial.end();
                 {
                     unsigned long timenow = millis();//A single point of reference to prevent changing during the following
                     Devspec[ devspec_index ].timestamp_of_pin_last_attempted_device_read_millis = 0;
-                    Devspec[ devspec_index ].device_busy_resting_until_this_system_millis = Devprot[ Devspec[ devspec_index ].devprot_index ].millis_rest_length;
+                    Devspec[ devspec_index ].device_busy_resting_this_more_millis = Devprot[ Devspec[ devspec_index ].devprot_index ].millis_rest_length;
                     break;
                 }
             }
@@ -3121,7 +3097,6 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     { 
                         Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices |= PCMSK;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 0 ];
                         break;
                     }
@@ -3137,7 +3112,6 @@ Serial.end();
                         Isrspec[ 0 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK;
                     }
                 }
-                Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ indexwisePCMSK ] = pin + 1;
                 // Need to store this in an array for this ISR, ordered by PCMSK bit position, will store pin number from which port and bitmask will be obtained as needed
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK ][ 0 ] == NULL ) PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK ][ 0 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK ][ 0 ] = pin + 1;
@@ -3153,7 +3127,6 @@ Serial.end();
                 {
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices |= PCMSK0;    //record a device found at this PCMSK bit
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 1 ];
                         break;
@@ -3169,7 +3142,6 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices |= PCMSK0;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 0 ];
                         break;
                     }
@@ -3188,7 +3160,6 @@ Serial.end();
                         Isrspec[ 1 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK0;
                     }
                 }
-                Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR[ indexwisePCMSK0 ] = pin + 1;
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK0 ][ 1 ] == NULL ) PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK0 ][ 1 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK0 ][ 1 ] = pin + 1;
         #else
@@ -3201,7 +3172,6 @@ Serial.end();
                         Isrspec[ 0 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK0;
                     }
                 }
-                Isrspec[ 0 ].array_of_all_pinnums_plus_one_this_ISR[ indexwisePCMSK0 ] = pin + 1;
                 if ( !PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK0 ][ 0 ] ) PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK0 ][ 0 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK0 ][ 0 ] = pin + 1;
         #endif
@@ -3217,7 +3187,6 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices |= PCMSK1;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 1 ];
                         break;
                     }
@@ -3233,7 +3202,6 @@ Serial.end();
                         Isrspec[ 1 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK1;
                     }
                 }
-                Isrspec[ 1 ].array_of_all_pinnums_plus_one_this_ISR[ indexwisePCMSK1 ] = pin + 1;
                 if ( !PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK1 ][ 1 ] )  PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK1 ][ 1 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK1 ][ 1 ] = pin + 1;
             }
@@ -3247,7 +3215,6 @@ Serial.end();
                 {
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Isrspec[ 2 ].mask_by_PCMSK_of_valid_devices |= PCMSK2;    //record a device found at this PCMSK bit
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 2 ];
                         break;
@@ -3265,7 +3232,6 @@ Serial.end();
                         Isrspec[ 2 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK2;
                     }
                 }
-                Isrspec[ 2 ].array_of_all_pinnums_plus_one_this_ISR[ indexwisePCMSK2 ] = pin + 1;
                 if ( !PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK2 ][ 2 ] )  PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK2 ][ 2 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK2 ][ 2 ] = pin + 1;
             }
@@ -3279,7 +3245,6 @@ Serial.end();
                 {
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
-                        Devspec[ devspec_index ].portspec_index_for_pin = ( u8 )( strchr( ports_string_in_heap_array, portchar ) - ports_string_in_heap_array );
                         Isrspec[ 3 ].mask_by_PCMSK_of_valid_devices |= PCMSK3;    //record a device found at this PCMSK bit
                         Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 3 ];
                         break;
@@ -3435,7 +3400,6 @@ EndOfThisPin:;
             Serial.print( F( ": " ) );
             if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] )//true for every pin having an ISR
             { //real pin number = PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1, real ISR number = j, real PCMSK bit index = i
-                Isrspec[ Isrxref->ISR_xref[ j ] ].array_of_all_pinnums_plus_one_this_ISR[ i ] = PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ];
                 Serial.print( F( "Can be triggered by each voltage toggle occurring on D" ) );
                 Serial.print( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] - 1 );
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ i ][ j ] < 101 ) Serial.print( F( " " ) );
@@ -4069,6 +4033,8 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.begin( 57600 ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
+    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "Arduino DHTs on Interrupt Steroids Sketch" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -4250,7 +4216,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 if( ( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 ) < 10 ) Serial.print( F( " " ) );
                 Serial.print( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 );
                 Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
-                Serial.print( this_Devspec_address->device_busy_resting_until_this_system_millis );
+                Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
                 Serial.print( F( "mS " ) );
                 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
                 Serial.flush();
@@ -4302,7 +4268,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
             if( ( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 ) < 10 ) Serial.print( F( " " ) );
             Serial.print( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 );
             Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
-            Serial.print( this_Devspec_address->device_busy_resting_until_this_system_millis );
+            Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
             Serial.print( F( "mS " ) );
             Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
         }
