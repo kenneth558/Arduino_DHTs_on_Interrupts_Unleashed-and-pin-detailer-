@@ -25,4 +25,4 @@ More can be said, but I'm running out of time tonight.  Let me just post some wo
 
 I merely got this functional, not beautiful.  It is not intended for first-project newbies who need handholding modifying the code to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time, since a four microsecond delay is all it takes to corrupt the data stream.
 
-Progress being made: This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO - only 13 devices are supported, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat and posting daily updates.
+Progress being made: This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat and posting daily updates.
