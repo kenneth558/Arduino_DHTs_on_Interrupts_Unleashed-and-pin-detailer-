@@ -1,5 +1,5 @@
 # Arduino_DHTs_on_Interrupt_steroids
-Interrupt's true prupose is to avoid polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well.  Also, it is not really a formal library, just some ISR code, ISR launcher code in setup(), DHT device detection and ISR pin change detection code, and main loop() examples of how RH and temperatures are read from the data structures.
+Interrupt's true purpose is to avoid polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well.  Also, it is not really a formal library, just some ISR code, ISR launcher code in setup(), DHT device detection and ISR pin change detection code, and main loop() examples of how RH and temperatures are read from the data structures.
 
 This project utilizes two different interrupt service routine types - one "Pin Change Interrupt" pin for every DHT device connected and an additional over-all process-monitoring/watchdog code segment that resides in "Timer/Counter Compare Match A" interrupt code.  This code does not use any of the "2-wire Serial Interface", "External Interrupt", "Watchdog", "Timer/Counter Overflow", etc. types of interrupts.
 
