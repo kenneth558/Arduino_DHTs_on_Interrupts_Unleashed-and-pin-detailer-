@@ -52,9 +52,9 @@ const u8 pins_NOT_safe_even_to_make_low_Z_during_testing[ ] = { };
 #include "misc_maskportitems.h"
 const u8 dht_max_transitions_for_valid_acquisition_stream = 42;
 #include "structs.h"
-ISRXREF* Isrxref;
-PINXREF* Pinxref;
-PORTXREF* Portxref;
+ISRXREF* Isrxref = 0;
+//PINXREF* Pinxref;
+//PORTXREF* Portxref;
 ISRSPEC* Isrspec;
 PORTSPEC* Portspec;
 DEVSPEC* Devspec;
@@ -62,6 +62,7 @@ DEVSPEC* Devspec;
 bool mswindows = false;  //Used for line-end on serial outputs.  Will be determined true during run time if a 1 Megohm ( value not at all critical as long as it is large enough ohms to not affect operation otherwise ) resistor is connected from pin LED_BUILTIN to PIN_A0
 u8 number_of_ports_found = 0; //Doesn't ever need to be calculated a second time, so make global and calculate in setup
 u8 number_of_devices_found = 0;
+u8 number_of_populated_isrs = 0;
 const PROGMEM unsigned long halftime = ( ( unsigned long ) -1 )>>1;
 const PROGMEM u8 allowed_number_consecutive_read_failures = 25;//JUST A GUESS, NOT EVEN EMPIRICS TO SUPPORT THIS
 const PROGMEM u8 consecutive_reads_to_verify_device_type = 20;
@@ -271,6 +272,16 @@ void prep_ports_for_detection()
 
 bool build_from_nothing()
 {
+/* */
+        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.setTimeout( 10 ); //
+        while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
+/* */
+        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.print( F( "Examining environment.  This will take a few seconds..." ) );
+        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.flush();
+        Serial.end();
     u8 duplicate_pin_higher = 0;
     u8 duplicate_pin_lower = 0;
     if ( F_CPU != 16000000 )
@@ -514,8 +525,6 @@ bool build_from_nothing()
  */
 
 unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
-        sizeof( PORTXREF ) + \
-        ( sizeof( PINXREF ) * number_of_devices_found ) + \
         ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
         ( sizeof( PORTSPEC ) * populated_port_count ) + \
         ( sizeof( DEVSPEC ) * number_of_devices_found ) + \
@@ -701,12 +710,8 @@ PORTSPEC* Portspec;
 PINSPEC* Pinspec; 
 DEVSPEC* Devspec;
 */
-    Pinxref = ( PINXREF* )( ( long unsigned int )Isrxref + sizeof( ISRXREF ) );
-    Portxref = ( PORTXREF* )( ( long unsigned int )Pinxref + ( sizeof( PINXREF )  * number_of_devices_found ) );
-    Isrspec = ( ISRSPEC* )( ( long unsigned int )Portxref + sizeof( PORTXREF ) );
+    Isrspec = ( ISRSPEC* )( ( long unsigned int )Isrxref + sizeof( ISRXREF ) );
     Portspec = ( PORTSPEC* )( ( long unsigned int )Isrspec + ( sizeof( ISRSPEC) * number_of_ISRs ) );
-//    Pinspec = ( PINSPEC* )( ( long unsigned int )Portspec + ( sizeof( PORTSPEC ) * number_of_ports_found ) );
-//    Devspec = ( DEVSPEC* )( ( long unsigned int )Pinspec + ( sizeof( PINSPEC ) * NUM_DIGITAL_PINS ) );
     Devspec = ( DEVSPEC* )( ( long unsigned int )Portspec + ( sizeof( PORTSPEC ) * populated_port_count ) );
     ports_string_in_heap_array = ( char* )( ( long unsigned int )Devspec + ( sizeof( DEVSPEC ) * number_of_devices_found ) );
     strcpy( ports_string_in_heap_array, string_of_all_ports_that_are_populated );//This makes ports_string_in_heap_array not suitable for interrupt findings if any pins served by interrupts don't have devices on them!!!
@@ -808,7 +813,7 @@ DEVSPEC* Devspec;
     for ( u8 i = 0; i < number_of_ISRs; i++ )
     {
         Isrxref->ISR_xref[ i ] = i;
-        Isrxref->my_isr_addr[ i ] = &Isrspec[ i ];
+        Isrxref->my_isrspec_addr[ i ] = &Isrspec[ i ];
     }
 //    for( u8 i = 0; i < sizeof( Pinxref->PIN_xref_dev ); i++ )
 //        Pinxref->PIN_xref_dev[ i ] = 255;//MOST OF THESE WILL GO TO WASTE
@@ -845,7 +850,7 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
     for( u8 i = 0; i < number_of_devices_found; i++ )//make sure we never make the number of elements in devspec_index a different amount than this line thinks
     {
         digitalWrite( pre_array_devspec_index[ i ], HIGH );
-        Pinxref[ i ].Dpin = pre_array_devspec_index[ i ];
+//        Pinxref[ i ].Dpin = pre_array_devspec_index[ i ];
         Devspec[ i ].Dpin = pre_array_devspec_index[ i ];
         for( u8 ij = 0; ij < sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device )/ sizeof( Devspec[ i ].last_valid_data_bytes_from_dht_device[ 0 ] ); ij++ )
             Devspec[ i ].last_valid_data_bytes_from_dht_device[ ij ] = 0;
@@ -967,10 +972,10 @@ delay( 2000 );//ensure all devices get a rest period right here
  */
 
     
-    
+/*    
     for( u8 i = 0; i < sizeof( Portxref->PORT_xref ); i++ )
         Portxref->PORT_xref[ i ] = i;
-
+*/
 //adjust so ptr is at first ISRSPEC element to eliminate later calculations to find it
 //    ISR_WITH_DHT_port_pinmask_stack_array += sizeof( ELEMENTS_IN ) + ( sizeof( ISRSPEC ) * number_of_ISRs );
 
@@ -2366,7 +2371,7 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A2()//default purpose for th
 
 bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
 { 
-  volatile u8 PCINT_pins_by_PCMSK_and_ISR[2][8][number_of_ISRs];
+  volatile u8 PCINT_pins_by_PCMSK_and_ISR[ 2 ][ 8 ][ number_of_ISRs ];
 
 // size of ISR_WITH_DHT_port_pinmask_stack_array at entry of this function the first time: 
 //number_of_ports_found
@@ -2463,6 +2468,7 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
 
 #ifdef PCMSK
     PCMSK = 0;
+    isrspec_addr0 = &srspec[ 0 ];
     pin_change_reported_by_ISR = 0;
     Isrspec[ 0 ].mask_by_PCMSK_of_real_pins = 0;
     Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices = 0;
@@ -2487,6 +2493,7 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
         Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ m ] = 0;
     #ifdef PCMSK0 //The purpose of this entry is for rationale only, never expected to materialize
         PCMSK0 = 0;
+        isrspec_addr1 = &Isrspec[ 1 ];
         pin_change_reported_by_ISR0 = 0;
         Isrspec[ 1 ].mask_by_PCMSK_of_real_pins = 0;
         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices = 0;
@@ -2513,6 +2520,7 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
 #else
     #ifdef PCMSK0
         PCMSK0 = 0;
+        isrspec_addr0 = &Isrspec[ 0 ];
         Isrspec[ 0 ].mask_by_PCMSK_of_real_pins = 0;
         Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices = 0;
         Isrspec[ 0 ].pcmsk = &PCMSK0;
@@ -2549,6 +2557,7 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
  */
     #ifdef PCMSK1
         PCMSK1 = 0;
+        isrspec_addr1 = &Isrspec[ 1 ];
         Isrspec[ 1 ].mask_by_PCMSK_of_real_pins = 0;
         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices = 0;
         Isrspec[ 1 ].pcmsk = &PCMSK1;
@@ -2573,6 +2582,7 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
     #endif
     #ifdef PCMSK2
         PCMSK2 = 0;
+        isrspec_addr2 = &Isrspec[ 2 ];
         Isrspec[ 2 ].mask_by_PCMSK_of_real_pins = 0;
         Isrspec[ 2 ].mask_by_PCMSK_of_valid_devices = 0;
         Isrspec[ 2 ].pcmsk = &PCMSK2;
@@ -2597,6 +2607,7 @@ Isrspec[ 0 ].array_of_all_devprot_index_this_ISR[ 0 ] = 0;
     #endif
     #ifdef PCMSK3
         PCMSK3 = 0;
+        isrspec_addr3 = &Isrspec[ 3 ];
         Isrspec[ 3 ].mask_by_PCMSK_of_real_pins = 0;
         Isrspec[ 3 ].mask_by_PCMSK_of_valid_devices = 0;
         Isrspec[ 3 ].pcmsk = &PCMSK3;
@@ -3097,7 +3108,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     { 
                         Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices |= PCMSK;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 0 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 0 ];
                         break;
                     }
                 }
@@ -3128,7 +3139,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices |= PCMSK0;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 1 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 1 ];
                         break;
                     }
                 }
@@ -3142,7 +3153,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 0 ].mask_by_PCMSK_of_valid_devices |= PCMSK0;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 0 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 0 ];
                         break;
                     }
                 }
@@ -3187,7 +3198,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 1 ].mask_by_PCMSK_of_valid_devices |= PCMSK1;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 1 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 1 ];
                         break;
                     }
                 }
@@ -3216,7 +3227,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 2 ].mask_by_PCMSK_of_valid_devices |= PCMSK2;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 2 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 2 ];
                         break;
                     }
                 }
@@ -3246,7 +3257,7 @@ Serial.end();
                     if( Devspec[ devspec_index ].Dpin == pin )
                     {
                         Isrspec[ 3 ].mask_by_PCMSK_of_valid_devices |= PCMSK3;    //record a device found at this PCMSK bit
-                        Devspec[ devspec_index ].my_isr_addr = &Isrspec[ 3 ];
+                        Devspec[ devspec_index ].my_isrspec_addr = &Isrspec[ 3 ];
                         break;
                     }
                 }
@@ -3361,7 +3372,7 @@ EndOfThisPin:;
                 b = b%8;
                 if ( !( bool )b ) 
                 { 
-                    c++ %number_of_ISRs;
+                    c = ( c + 1 ) % number_of_ISRs;
                     if ( !( bool )c ) break;
                 }
             }
@@ -3812,6 +3823,14 @@ EndOfThisPin:;
     Serial.flush();
     Serial.end();
 //WE FINALLY KNOW HOW MANY DHT DEVICES SERVED BY ISR THERE ARE.  MAKE AN ARRAY OF THEM WITH A XREF ARRAY
+//Prepare to free and re-malloc
+/*  The problem with doing this is that the available RAM would need to hold twice the size of what we need to save: save on stack plus malloc from heap that amount again.  Would fail the malloc unnecessarily
+    for( u8 i = 0; i < number_of_ISRs; i++ )//free previous malloc of isrspec and refill isrspec_addr0 - 3 and reset Devspec.my_isrspec_addr
+        if ( Isrspec[ i ].mask_by_PCMSK_of_valid_devices )
+        {
+            Isrxref->ISR_xref[ number_of_populated_isrs++ ] = i;
+        }
+*/
 //    for( u8 i = 0; i < ; i++ )
 //        Devxref->DEV_xref[ i ] = i;
 
@@ -4033,6 +4052,7 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.begin( 57600 ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
+    Serial.flush();
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "Arduino DHTs on Interrupt Steroids Sketch" ) );
