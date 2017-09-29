@@ -24,3 +24,5 @@ The compare-match interrupt code routine (ISR) is triggered every millisecond, a
 More can be said, but I'm running out of time tonight.  Let me just post some working code for you to mold to your needs.  This is c++, so it is free.  An assembly code version awaits until I see an interest demonstrated by [a] potential customer/employer[s].  Please let me know if that is you!
 
 I merely got this functional, not beautiful.  It is not intended for first-project newbies who need handholding modifying the code to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time, since a four microsecond delay is all it takes to corrupt the data stream.
+
+Progress being made: This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch fails on boards with less memory.  I am removing memory bloat and posting daily updates.
