@@ -16,14 +16,6 @@ ISR( TIMER0_COMPA_vect )
     for( u8 devspec_index = 0; devspec_index < number_of_devices_found; devspec_index++ )
     {
         if( Devspec[ devspec_index ].device_busy_resting_until_this_system_millis ) --Devspec[ devspec_index ].device_busy_resting_until_this_system_millis;
-//        {
-/*
-            if( !( --Devspec[ devspec_index ].device_busy_resting_until_this_system_millis ) )
-            {
-                
-            }
-*/
-//        }
     }
 
     Device_Timer* this_timer_address;
@@ -35,7 +27,6 @@ ISR( TIMER0_COMPA_vect )
     bool should_be_zero = false;
     bool should_be_one = false;
 
-//    unsigned long timenowmicros;
     ISRSPEC* this_Isrspec_address;
     DEVSPEC* this_Devspec_address;
 
@@ -44,39 +35,21 @@ ISR( TIMER0_COMPA_vect )
         if( device_timer[ timerindex ].on_hold_until_called_by_another_process == 254 )
             if( !( --device_timer[ timerindex ].timeset_millis ) )
             {
-/*
-                Device_Timer* this_timer_address = &device_timer[ timerindex ];
-                ISRSPEC* this_Isrspec_address = &Isrspec[ this_timer_address->which_ISR ];
-                DEVSPEC* this_Devspec_address = &Devspec[ this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] - 1 ];
-                volatile unsigned long timenowmicros = micros();//A single point of reference to prevent changing during the following
-                volatile unsigned long timenowmillis = millis();//A single point of reference to prevent changing during the following
-*/
                 this_timer_address = &device_timer[ timerindex ];
                 this_Isrspec_address = &Isrspec[ this_timer_address->which_ISR ];
                 this_Devspec_address = &Devspec[ this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] - 1 ];
                 timenowmicros = micros();//A single point of reference to prevent changing during the following
                 timenowmillis = millis();//A single point of reference to prevent changing during the following
-//        this_Devspec_address->debug_data[ 0 ] = 56;
-//        this_Devspec_address->debug_data[ 2 ] = 0;
                 if( !( ( timenowmillis + Devprot[ this_Devspec_address->devprot_index ].millis_rest_length + 20 ) < timenowmillis ) && !( ( timenowmicros + Devprot[ this_Devspec_address->devprot_index ].micros_data_acq_time_max + 100 ) < timenowmicros ) ) //see if not enough time before overflow
                 {
                     PCICR |= bit( this_timer_address->which_ISR );//This will not work on xref'd indexes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
-
-                
-                //this_Devspec_address->debug_PCICR = PCICR;
                     *this_Isrspec_address->pcmsk = this_Isrspec_address->mask_by_PCMSK_of_current_device_within_ISR;
-                //this_Devspec_address->debug_pcmsk = this_Isrspec_address->mask_by_PCMSK_of_current_device_within_ISR;
                     PCIFR |= bit( this_timer_address->which_ISR );
-                //this_Devspec_address->debug_PCIFR = PCIFR;
                     this_Devspec_address->micros_will_overflow = false;
                     this_Isrspec_address->next_bit_coming_from_dht = 0;
                     this_Devspec_address->device_busy_resting_until_this_system_millis = Devprot[ this_Devspec_address->devprot_index ].millis_rest_length + ( Devprot[ this_Devspec_address->devprot_index ].micros_data_acq_time_max / 1000 ) + 13;//The 13 is empirical determined
-                //this_Devspec_address->debug_device_busy_resting_until_this_system_millis = Devprot[ this_Devspec_address->devprot_index ].millis_rest_length;
-//                    if( timenowmillis > this_Devspec_address->device_busy_resting_until_this_system_millis ) this_Devspec_address->millis_will_overflow = true;
                     this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis = timenowmillis;
-                //this_Devspec_address->debug_timestamp_of_pin_last_attempted_device_read_millis = this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis;
                     this_Devspec_address->start_time_plus_max_acq_time_in_uSecs = timenowmicros + Devprot[ this_Devspec_address->devprot_index ].micros_data_acq_time_max;
-                //this_Devspec_address->debug_start_time_plus_max_acq_time_in_uSecs = this_Devspec_address->start_time_plus_max_acq_time_in_uSecs;
                     if( !this_Devspec_address->start_time_plus_max_acq_time_in_uSecs )
                     {
                         this_Devspec_address->start_time_plus_max_acq_time_in_uSecs++; //zero is not a valid value unless device is done sending data train
@@ -85,11 +58,8 @@ ISR( TIMER0_COMPA_vect )
                     for( u8 ij = 0; ij < sizeof( this_Isrspec_address->sandbox_bytes ); ij++ )
                         this_Isrspec_address->sandbox_bytes[ ij ] = 0;
                     this_Isrspec_address->interval = 2;
-                //this_Devspec_address->debug_ddr_b4 = *this_Isrspec_address->active_pin_ddr_port_reg_addr;//The bit is supposed to be high right now
                     *this_Isrspec_address->active_pin_ddr_port_reg_addr &= ~this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR;//MAKE THE PIN INTO INPUT
-                //this_Devspec_address->debug_active_pin_ddr_port_reg_addr = *this_Isrspec_address->active_pin_ddr_port_reg_addr;
                     *this_Isrspec_address->active_pin_output_port_reg_addr |= this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR;//MAKE THE PIN HAVE PULLUP
-                //this_Devspec_address->debug_active_pin_output_port_reg_addr = *this_Isrspec_address->active_pin_output_port_reg_addr;
                     this_timer_address->on_hold_until_called_by_another_process = 0;//The code for timer is now available                
                     goto END;//this function must always enable interrupts when ending
                 }
@@ -109,20 +79,14 @@ ISR( TIMER0_COMPA_vect )
     {
         goto CONTINUE;
     }
-
-//    if( !this_Devspec_address->device_busy_resting_until_this_system_millis )//This stops retries of taimestamp translation
-//        goto DONE_WITH_READ;
         
     if( this_Isrspec_address->interval == dht_max_transitions_for_valid_acquisition_stream ) goto STAGE_2;
     if( this_Isrspec_address->interval == 1 ) goto STAGE_3;
 
     if( ( this_Isrspec_address->next_bit_coming_from_dht != dht_max_transitions_for_valid_acquisition_stream ) && ( micros() > this_Devspec_address->start_time_plus_max_acq_time_in_uSecs ) )
     {
- //       this_Devspec_address->debug_data[ 0 ] = 15199;
-        //this_Devspec_address->debug_data[ 1 ] = 9999;
-//        this_Devspec_address->debug_data[ 1 ] = this_Isrspec_address->next_bit_coming_from_dht;
-        this_Devspec_address->next_bit_coming_from_dht = this_Isrspec_address->next_bit_coming_from_dht;// DEBUG USE ONLY, REMOVE FOR PRODUCTION VERSION
-        if( ++this_Devspec_address->consecutive_read_failures > allowed_number_consecutive_read_failures ) this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] = 0;
+        ++this_Devspec_address->consecutive_read_failures;
+//        if( ++this_Devspec_address->consecutive_read_failures > allowed_number_consecutive_read_failures ) this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] = 0;//NOT USED without auto-retry
         PCICR &= ~Isrxref->ISR_xref[ ISR_index_in_isr ];//Done with acquisition cycle, turn off PC Iinterrupts for this ISR
         *this_Isrspec_address->active_pin_ddr_port_reg_addr |= this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR;
         *this_Isrspec_address->active_pin_output_port_reg_addr |= this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR;//starts the resting
@@ -148,21 +112,16 @@ ISR( TIMER0_COMPA_vect )
             }
             this_Isrspec_address->interval++;
         }
-    //        this_Devspec_address->debug_data[ 0 ] = 150;
-    //        this_Devspec_address->debug_data[ 2 ] = 0;
-    
         if( this_Isrspec_address->interval != dht_max_transitions_for_valid_acquisition_stream ) 
         {
             goto CONTINUE;
         }
-        //228 uSec left to finish the isr, 672+++ if no throttling loop above
         if( ( u8 )( this_Isrspec_address->sandbox_bytes[ 0 ] + this_Isrspec_address->sandbox_bytes[ 1 ] + this_Isrspec_address->sandbox_bytes[ 2 ] + this_Isrspec_address->sandbox_bytes[ 3 ] ) != this_Isrspec_address->sandbox_bytes[ 4 ] )
         {//FAIL DUE TO CRC or OUT OF BOUNDS
             if( !this_Isrspec_address->offset ) this_Isrspec_address->offset = 4;
             else if( this_Isrspec_address->offset == 4 ) this_Isrspec_address->offset = -4;
             else
             {
-    //        this_Devspec_address->debug_data[ 0 ] = 165;
 ERRD_OUT:;
                 this_Devspec_address->consecutive_read_failures++;//array_of_all_devspec_index_plus_1_this_ISR
                 if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type ) this_Devspec_address->consecutive_read_successes = 0;
@@ -175,12 +134,10 @@ ERRD_OUT:;
     }
     if( !this_Isrspec_address->sandbox_bytes[ 0 ] && !this_Isrspec_address->sandbox_bytes[ 1 ] && !this_Isrspec_address->sandbox_bytes[ 2 ] && !this_Isrspec_address->sandbox_bytes[ 3 ] && !this_Isrspec_address->sandbox_bytes[ 4 ] )
     {//This condition happens when the device did not have enough rest.  Double the device_busy_resting_until_this_system_millis time for this Devspec. If only the rest time was the problem the consecutive_read_failures will not accumulate
-//        this_Devspec_address->debug_data[ 0 ] = 176;
         this_Devspec_address->consecutive_read_failures++;
         if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type ) this_Devspec_address->consecutive_read_successes = 0;
         this_Devspec_address->device_busy_resting_until_this_system_millis += Devprot[ this_Devspec_address->devprot_index ].millis_rest_length;
         if( Devprot[ this_Devspec_address->devprot_index ].millis_rest_length < 5000 ) Devprot[ this_Devspec_address->devprot_index ].millis_rest_length += 3000;
-//        if( this_Devspec_address->device_busy_resting_until_this_system_millis < millis() ) this_Devspec_address->millis_will_overflow = true;
         goto DONE_WITH_READ;
     }
     goto CONTINUE;
@@ -188,30 +145,12 @@ STAGE_2:;//*this_Isrspec_address->val_tmp1 is now where for dht11 data 10% RH wi
 //If both values above are within dht11 range, assume dht11 until consecutive_read_successes reaches consecutive_reads_to_verify_device_type
     this_Isrspec_address->interval = 2;
     if( !this_Devspec_address->devprot_index && !this_Isrspec_address->sandbox_bytes[ 1 ] && !this_Isrspec_address->sandbox_bytes[ 3 ] && ( this_Isrspec_address->sandbox_bytes[ 0 ] < 60 ) && ( this_Isrspec_address->sandbox_bytes[ 2 ] < 100 ) )//had to check indices 1 and 3 seperately due to (invalid) negative values still equating to (valid) "less than"
-    {//Sometimes this gets executed by mistake, hence no reading faults for DHT22 devices
+    {;
         //change the devspec devprot index if necessary so the proper rest time is enforced
-        this_Devspec_address->debug_data[ 0 ] = 191;
-//        this_Devspec_address->debug_data[ 1 ] = this_Devspec_address->consecutive_read_successes;
-            this_Devspec_address->debug_data[ 1 ] = this_Isrspec_address->sandbox_bytes[ 0 ];
-            this_Devspec_address->debug_data[ 2 ] = this_Isrspec_address->sandbox_bytes[ 1 ];
-            this_Devspec_address->debug_data[ 3 ] = this_Isrspec_address->sandbox_bytes[ 2 ];
-            this_Devspec_address->debug_data[ 4 ] = this_Isrspec_address->sandbox_bytes[ 3 ];
-//        this_Devspec_address->debug_data[ 2 ] = consecutive_reads_to_verify_device_type;
-//        this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 0 ];
-//        this_Devspec_address->last_valid_data_bytes_from_dht_device[ 1 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 1 ];
-//        this_Devspec_address->last_valid_data_bytes_from_dht_device[ 2 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 2 ];
-//        this_Devspec_address->last_valid_data_bytes_from_dht_device[ 3 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 3 ];
-//        this_Devspec_address->timestamp_of_pin_valid_data_millis = millis();
-//        this_Devspec_address->index_of_next_valid_readings_sets = ( this_Devspec_address->index_of_next_valid_readings_sets + 1 ) % confidence_depth;
-//        goto DONE_WITH_READ;
     }
     else if( this_Devspec_address->devprot_index || ( this_Devspec_address->consecutive_read_successes < consecutive_reads_to_verify_device_type ) )
     {//prep for check for being DHT22
         this_Isrspec_address->interval = 1;
-this_Devspec_address->debug_data[ 1 ] = this_Isrspec_address->sandbox_bytes[ 0 ];
-this_Devspec_address->debug_data[ 2 ] = this_Isrspec_address->sandbox_bytes[ 1 ];
-this_Devspec_address->debug_data[ 3 ] = this_Isrspec_address->sandbox_bytes[ 2 ];
-this_Devspec_address->debug_data[ 4 ] = this_Isrspec_address->sandbox_bytes[ 3 ];
         this_Isrspec_address->sandbox_bytes[ 4 ] = this_Isrspec_address->sandbox_bytes[ 2 ];//To make big endian last for val_tmp2. Index 4 becomes additional holder of dht22 temp sign bit.  this byte will be exactly temp value for dht11, 10x RH value for dht22
         this_Isrspec_address->sandbox_bytes[ 2 ] = this_Isrspec_address->sandbox_bytes[ 0 ];//To make big endian last for val_tmp1.  Overwrites original sign bit leaving index 4 only with sign bit.  this byte will be exactly temp value for dht11, 10x temp value for dht22
 //last_valid_data_bytes_from_dht_device //Sometimes this gets executed by mistake, hence no reading faults for DHT11 devices
@@ -225,42 +164,17 @@ this_Devspec_address->debug_data[ 4 ] = this_Isrspec_address->sandbox_bytes[ 3 ]
         goto CONTINUE;
 STAGE_3:;
         this_Isrspec_address->interval = 2;
-        this_Devspec_address->debug_data[ 0 ] = 219;
-//        this_Devspec_address->debug_data[ 1 ] = this_Devspec_address->consecutive_read_successes;
-//        this_Devspec_address->debug_data[ 2 ] = consecutive_reads_to_verify_device_type;
-    //    if( !this_Devspec_address->devprot_index && !this_Isrspec_address->sandbox_bytes[ 1 ] && !this_Isrspec_address->sandbox_bytes[ 3 ] && ( this_Isrspec_address->sandbox_bytes[ 0 ] < 60 ) && ( this_Isrspec_address->sandbox_bytes[ 2 ] < 100 ) )//had to check indices 1 and 3 seperately due to (invalid) negative values still equating to (valid) "less than"
         if( !( ( ( ( this_Isrspec_address->sandbox_bytes[ 0 ] < 100 ) && ( this_Isrspec_address->sandbox_bytes[ 2 ] < 100 ) ) || ( ( this_Isrspec_address->sandbox_bytes[ 2 ] & 0x80 ) && ( ( this_Isrspec_address->sandbox_bytes[ 2 ] & 0x7F ) < 41 ) ) ) && !( !this_Devspec_address->devprot_index && ( this_Devspec_address->consecutive_read_successes == consecutive_reads_to_verify_device_type ) ) ) )//had to check indices 1 and 3 seperately due to (invalid) negative values still equating to (valid) "less than"
         {//ALL FAILED
-            this_Devspec_address->debug_data[ 0 ] = 225;
-//Can't put original debug fills here b/c they got changed to dht22 values
             if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type )
-            {
-    //            this_Devspec_address->consecutive_read_successes = 0;
-                this_Devspec_address->debug_data[ 0 ] = 231;
                 this_Devspec_address->devprot_index = 0;
-            }
             goto ERRD_OUT;// or?
             goto DONE_WITH_READ;
         }
         this_Devspec_address->devprot_index = 1;
-//        this_Isrspec_address->val_tmp = ( float )( ( ( this_Isrspec_address->sandbox_bytes[ 2 ] & 0x7F ) * 256 ) + this_Isrspec_address->sandbox_bytes[ 3 ] );
-/*
-        this_Isrspec_address->val_tmp = ( float )( &this_Isrspec_address->sandbox_bytes[ 2 ] );
-        if( this_Isrspec_address->sandbox_bytes[ 2 ] & 0x80 )
-        {
-            this_Isrspec_address->sandbox_bytes[ 2 ] |= 0x80;
-        }
-        this_Isrspec_address->sandbox_bytes[ 2 ] = ( this_Isrspec_address->sandbox_bytes[ 2 ] & 0x80 ) | ( ( byte )( ( short )( *( &this_Isrspec_address->val_tmp + sizeof( this_Isrspec_address->val_tmp ) - 4 ) ) / 10 ) );
-        this_Isrspec_address->sandbox_bytes[ 3 ] = ( byte )( ( short )( *( &this_Isrspec_address->val_tmp + sizeof( this_Isrspec_address->val_tmp ) - 4 ) ) - ( ( ( short )( *( &this_Isrspec_address->val_tmp + sizeof( this_Isrspec_address->val_tmp ) - 4 ) ) / 10 ) * 10 ) );
-*/
     }
     else
     {
-        this_Devspec_address->debug_data[ 0 ] = 246;
-        this_Devspec_address->debug_data[ 1 ] = this_Isrspec_address->sandbox_bytes[ 0 ];
-        this_Devspec_address->debug_data[ 2 ] = this_Isrspec_address->sandbox_bytes[ 1 ];
-        this_Devspec_address->debug_data[ 3 ] = this_Isrspec_address->sandbox_bytes[ 2 ];
-        this_Devspec_address->debug_data[ 4 ] = this_Isrspec_address->sandbox_bytes[ 3 ];
             goto ERRD_OUT;// or?
             goto DONE_WITH_READ;
     }
@@ -298,7 +212,6 @@ STAGE_3:;
 //Determine what in following logic is keeping valid DHT11 readings from being accepted
 //    if( ( this_Isrspec_address->sandbox_bytes[ 0 ] > 100 ) || ( this_Isrspec_address->sandbox_bytes[ 1 ] > 9 ) || ( this_Isrspec_address->sandbox_bytes[ 3 ] > 9 ) ) //add other limit checking to expand dragnet as desired
 //    {//dragnet...values arrived at are out of bounds 
-//        this_Devspec_address->debug_data[ 1 ] = 277;//this_Isrspec_address->next_bit_coming_from_dht;
 //        if( this_Devspec_address->consecutive_read_failures > allowed_number_consecutive_read_failures ) this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] = 0;
 //        goto CONTINUE;//This will try throughout resting period to recalculate timestamps
 //    }
@@ -307,29 +220,16 @@ STAGE_3:;
     if( this_Devspec_address->consecutive_read_failures )
         this_Devspec_address->consecutive_read_successes = this_Devspec_address->consecutive_read_failures = 0;//Single byte so no atomic concerns
     else if( this_Devspec_address->consecutive_read_successes == consecutive_reads_to_verify_device_type )
-    {
-//        this_Devspec_address->devprot_index = 1;
-        this_Devspec_address->debug_data[ 0 ] = 290;
-        this_Devspec_address->debug_data[ 1 ] = this_Devspec_address->consecutive_read_successes;
+    {;
     }
     else
     {
         ++( this_Devspec_address->consecutive_read_successes );
-        this_Devspec_address->debug_data[ 1 ] = this_Devspec_address->consecutive_read_successes;
     }
-    /* */
-    this_Devspec_address->next_bit_coming_from_dht = 0;//DEBUG ONLY REMOVE IN PRODUCTION VERSION
     this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 0 ];
     this_Devspec_address->last_valid_data_bytes_from_dht_device[ 1 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 1 ];
     this_Devspec_address->last_valid_data_bytes_from_dht_device[ 2 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 2 ];
     this_Devspec_address->last_valid_data_bytes_from_dht_device[ 3 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * this_Devspec_address->index_of_next_valid_readings_sets ) ] = this_Isrspec_address->sandbox_bytes[ 3 ];
-    /* */
-    /*
-    this_Devspec_address->last_valid_data_bytes_from_dht_device[ 0 ] = this_Isrspec_address->sandbox_bytes[ 0 ];
-    this_Devspec_address->last_valid_data_bytes_from_dht_device[ 1 ] = this_Isrspec_address->sandbox_bytes[ 1 ];
-    this_Devspec_address->last_valid_data_bytes_from_dht_device[ 2 ] = this_Isrspec_address->sandbox_bytes[ 2 ];
-    this_Devspec_address->last_valid_data_bytes_from_dht_device[ 3 ] = this_Isrspec_address->sandbox_bytes[ 3 ];
-    */
     this_Devspec_address->timestamp_of_pin_valid_data_millis = millis();
     this_Devspec_address->index_of_next_valid_readings_sets = ( this_Devspec_address->index_of_next_valid_readings_sets + 1 ) % confidence_depth;
 //    goto DONE_WITH_READ;
@@ -338,7 +238,7 @@ DONE_WITH_READ:;
     this_Devspec_address->start_time_plus_max_acq_time_in_uSecs = 0;//to make the devspec available for triggering again.  Had to wait until no further need to translate timestamps.
 CONTINUE:;//goto AFTER_TRIGGER_NEXT_DEVICE;
 //Check for device needing to be read, but only on ISRs that are completely and successfully finished translating timestamps
-//    if( millis( ) < 20000 ) goto AFTER_TRIGGER_NEXT_DEVICE;//Do not proceeed until system is ready
+//    if( millis( ) < 20000 ) goto AFTER_TRIGGER_NEXT_DEVICE;//Do not proceed until system is ready
 //    if( micros() > ISRTIMER0_COMPA_vect_executiontime_micros + 20 ) ISR_counter = 0;
 //    else ISR_counter = ISR_index_in_isr;
     ISR_counter = ISR_index_in_isr;
