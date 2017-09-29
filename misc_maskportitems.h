@@ -25,30 +25,45 @@
                                     0 ) ) ) ) ) )
 #endif  //Not sure if we want this here, re-evaluate it when we have mega board, etc. to test  
 */
+volatile struct ISR_specific typedef ISRSPEC;
 #ifdef PCMSK
     #ifdef PCMSK0 //The purpose of this entry is for rationale only, never expected to materialize
         const u8 PROGMEM number_of_ISRs = 2;
+        ISRSPEC* isrspec_addr0;
+        ISRSPEC* isrspec_addr1;
     #else
         const u8 PROGMEM number_of_ISRs = 1;
+        ISRSPEC* isrspec_addr0;
     #endif
 #else
     #if defined (PCMSK) || defined (PCMSK0) || defined (PCMSK1) || defined (PCMSK2) || defined (PCMSK3)
         #ifdef PCMSK3
             const u8 PROGMEM number_of_ISRs = 4;
+                ISRSPEC* isrspec_addr0;
+                ISRSPEC* isrspec_addr1;
+                ISRSPEC* isrspec_addr2;
+                ISRSPEC* isrspec_addr3;
         #else
             #ifdef PCMSK2
                 const u8 PROGMEM number_of_ISRs = 3;
+                ISRSPEC* isrspec_addr0;
+                ISRSPEC* isrspec_addr1;
+                ISRSPEC* isrspec_addr2;
             #else
                 #ifdef PCMSK1
                     const u8 PROGMEM number_of_ISRs = 2;
+                    ISRSPEC* isrspec_addr0;
+                    ISRSPEC* isrspec_addr1;
                 #else
                     #ifdef PCMSK0
                         const u8 PROGMEM number_of_ISRs = 1;
+                        ISRSPEC* isrspec_addr0;
                     #endif
                 #endif
             #endif
         #endif
     #else
         const u8 PROGMEM number_of_ISRs = 0;
+        ISRSPEC* isrspec_addr0;
     #endif
 #endif
