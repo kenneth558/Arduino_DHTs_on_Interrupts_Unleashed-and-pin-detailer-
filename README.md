@@ -12,6 +12,13 @@ Note that a typical Arduino board may have 3 Pin Change Interrupts with Pin Chan
 
 The compare-match interrupt code routine (ISR) is triggered every millisecond, and the pin change ISRs are triggered every one hundred microseconds, more or less, and MUST NOT BE DELAYED BY ANOTHER PIN CHANGE ISR NOR BY LEAVING INTERRUPTS TURNED OFF INSIDE THE COMPARE-MATCH ISR.  Therefore, the pin change ISRs must take as little execution time as possible, and the compare-match ISR must keep interrupts enabled as much as possible during its execution while ensuring its execution time is WELL less than a millisecond.  This project was written under the assumption that the PC interrupts are higher priority than the compare-match interrupt, but that assumption may not really be necessary since interrupts are kept enabled everywhere that atomic writes of shared memory locations are not at stake.
 
-More can be said, but I'm running out of time tonight.  Let me just post some working code for you to mold to your needs.  This is c++, so it is free.  An assembly code version awaits until an interest is demonstrated to me by [a] potential customer/employer[s].  Please let me know if that is you!
+More can be said, but I'm running out of time tonight.  Let me just post some working code for you to mold to your needs.  This is c++, so it is free.  An assembly code version awaits until I see an interest demonstrated by [a] potential customer/employer[s].  Please let me know if that is you!
 
 I merely got this functional, not beautiful.  It is not intended for first-project newbies who need handholding modifying the code to real-life needs.  That said, feel free to try anyway.  Please ensure your main code does not disable interrupts for more than roughly a microsecond at a time, since a four microsecond delay is all it takes to corrupt the data stream.
+
+Files you need to place in your sketch directory:
+
+	Arduino_DHTs_on_Interrupt_steroids.ino
+	ISRs.h
+	misc_maskportitems.h
+	structs.h
