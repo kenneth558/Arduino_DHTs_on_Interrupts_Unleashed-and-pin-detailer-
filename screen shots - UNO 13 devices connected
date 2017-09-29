@@ -1,0 +1,138 @@
+
+
+Arduino DHTs on Interrupt Steroids Sketch
+
+This sketch will display the numbers of all digital pins with the ports and port masks
+for them, detect and display all DHT devices connected (even those on pins not
+supporting Pin Change Interrupts), and detect the existence of all Pin Change Interrupts
+supported by the microcontroller board and display them for you.
+
+IT LEARNS THE INTERRUPT DETAIL BY TOGGLING PINS, so all pins must be free to toggle for
+the results shown to be correct.
+
+If you need to, you may protect pins from being tested for devices by listing them in one
+of the two protected pin arrays.  The built-in LED renders its pin useless for DHT use,
+so that pin is included in the list of protected pins by default and is given an alternate
+function, if you need it, of being high during the duration of the device detection process.
+The intent is so it can be used to control signal-gating circuitry of your design and
+construction to effectively disconnect pin signals and protect driven devices from the
+extraneous toggling occurring during device detection.
+
+If you see nonsense characters displayed associated with the detection process, please
+take the time now to add your board's serial communication pins to one of these
+protecting arrays if you'll be using pins for serial communications.
+
+Examining environment.  This will take a few seconds...
+
+LIST OF 20 DIGITAL PINS
+Pin D0       :PORTD bit 0
+Pin D1       :PORTD bit 1 pin is protected by it being listed in a protected pins array
+Pin D2       :PORTD bit 2 --DHT connected--
+Pin D3       :PORTD bit 3 --DHT connected--
+Pin D4       :PORTD bit 4 --DHT connected--
+Pin D5       :PORTD bit 5 --DHT connected--
+Pin D6       :PORTD bit 6 --DHT connected--
+Pin D7       :PORTD bit 7 --DHT connected--
+Pin D8       :PORTB bit 0 --DHT connected--
+Pin D9       :PORTB bit 1 --DHT connected--
+Pin D10      :PORTB bit 2 --DHT connected--
+Pin D11      :PORTB bit 3
+Pin D12      :PORTB bit 4
+Pin D13      :PORTB bit 5 pin is protected by it being listed in a protected pins array, LED_BUILTIN 
+Pin D14 (A0) :PORTC bit 0 --DHT connected--
+Pin D15 (A1) :PORTC bit 1 --DHT connected--
+Pin D16 (A2) :PORTC bit 2 --DHT connected--
+Pin D17 (A3) :PORTC bit 3 --DHT connected--
+Pin D18 (A4) :PORTC bit 4
+Pin D19 (A5) :PORTC bit 5
+
+DHT devices found on pins:
+    D2       
+    D3       
+    D4       
+    D5       
+    D6       
+    D7       
+    D8       
+    D9       
+    D10      
+    D14 (A0) 
+    D15 (A1) 
+    D16 (A2) 
+    D17 (A3) 
+Total of 13 DHT devices are connected
+
+
+For this ISR ( ISR0 with PCMSK0 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
+0: Can be triggered by each voltage toggle occurring on D8       ( port PORTB bit mask 1 )
+1: Can be triggered by each voltage toggle occurring on D9       ( port PORTB bit mask 10 )
+2: Can be triggered by each voltage toggle occurring on D10      ( port PORTB bit mask 100 )
+3: Can be triggered by each voltage toggle occurring on D11      ( port PORTB bit mask 1000 )
+4: Can be triggered by each voltage toggle occurring on D12      ( port PORTB bit mask 10000 )
+5: No PCINT-to-pin connection or the supported pin is declared protected
+6: No PCINT-to-pin connection or the supported pin is declared protected
+7: No PCINT-to-pin connection or the supported pin is declared protected
+
+For this ISR ( ISR1 with PCMSK1 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
+0: Can be triggered by each voltage toggle occurring on D14 (A0) ( port PORTC bit mask 1 )
+1: Can be triggered by each voltage toggle occurring on D15 (A1) ( port PORTC bit mask 10 )
+2: Can be triggered by each voltage toggle occurring on D16 (A2) ( port PORTC bit mask 100 )
+3: Can be triggered by each voltage toggle occurring on D17 (A3) ( port PORTC bit mask 1000 )
+4: Can be triggered by each voltage toggle occurring on D18 (A4) ( port PORTC bit mask 10000 )
+5: Can be triggered by each voltage toggle occurring on D19 (A5) ( port PORTC bit mask 100000 )
+6: No PCINT-to-pin connection or the supported pin is declared protected
+7: No PCINT-to-pin connection or the supported pin is declared protected
+
+For this ISR ( ISR2 with PCMSK2 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
+0: Can be triggered by each voltage toggle occurring on D0       ( port PORTD bit mask 1 )
+1: No PCINT-to-pin connection or the supported pin is declared protected
+2: Can be triggered by each voltage toggle occurring on D2       ( port PORTD bit mask 100 )
+3: Can be triggered by each voltage toggle occurring on D3       ( port PORTD bit mask 1000 )
+4: Can be triggered by each voltage toggle occurring on D4       ( port PORTD bit mask 10000 )
+5: Can be triggered by each voltage toggle occurring on D5       ( port PORTD bit mask 100000 )
+6: Can be triggered by each voltage toggle occurring on D6       ( port PORTD bit mask 1000000 )
+7: Can be triggered by each voltage toggle occurring on D7       ( port PORTD bit mask 10000000 )
+
+Summary of ISR-to-pin information:
+ISR0 - D-pins by PCMSK0 bit       ISR1 - D-pins by PCMSK1 bit       ISR2 - D-pins by PCMSK2 bit
+0: D8         DHT                 D14 (A0)   DHT                    D0                             
+1: D9         DHT                 D15 (A1)   DHT                    ---                               
+2: D10        DHT                 D16 (A2)   DHT                    D2         DHT                 
+3: D11                            D17 (A3)   DHT                    D3         DHT                 
+4: D12                            D18 (A4)                          D4         DHT                 
+5: ---                            D19 (A5)                          D5         DHT                 
+6: ---                            ---                               D6         DHT                 
+7: ---                            ---                               D7         DHT                 
+
+
+Factory sketch functions: enter the letter A or a number between 0 and 13 with your entire
+entry enclosed between these two characters: < and >.  Entering the letter A so enclosed
+will list all DHT devices each with its last 5 values obtained.  Entering the index
+number of any selected device will do the same for the one device only.  Reading errors
+that occur are displayed asynchronously by void loop() as they happen.
+At location # 0 is pin D2 (DHT22): 44.0% 21.5C 43.8% 21.5C 43.9% 21.5C 43.9% 21.5C 43.9% 21.5C age in seconds =  1.21  1.34 = last_attempted_read seconds ago. remaining rest: 704mS 
+At location # 1 is pin D3 (DHT11): 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C age in seconds =  0.11  0.24 = last_attempted_read seconds ago. remaining rest: 4777mS 
+At location # 2 is pin D4 (DHT22): 50.7% 21.0C 50.7% 21.0C 50.7% 21.0C 50.7% 20.9C 50.7% 20.9C age in seconds =  1.89  2.02 = last_attempted_read seconds ago. remaining rest: 37mS 
+At location # 3 is pin D5 (DHT22): 50.5% 21.3C 50.5% 21.3C 50.5% 21.3C 50.5% 21.3C 50.5% 21.3C age in seconds =  1.77  1.90 = last_attempted_read seconds ago. remaining rest: 156mS 
+At location # 4 is pin D6 (DHT22): 49.1% 21.6C 49.1% 21.6C 49.1% 21.6C 49.1% 21.6C 49.1% 21.6C age in seconds =  1.64  1.77 = last_attempted_read seconds ago. remaining rest: 283mS 
+At location # 5 is pin D7 (DHT22): 51.9% 21.1C 51.9% 21.1C 51.9% 21.1C 51.9% 21.1C 51.9% 21.1C age in seconds =  1.52  1.65 = last_attempted_read seconds ago. remaining rest: 401mS 
+At location # 6 is pin D8 (DHT11): 56.0% 18.0C 56.0% 18.0C 56.0% 18.0C 56.0% 18.0C 56.0% 18.0C age in seconds =  5.21  0.05 = last_attempted_read seconds ago. remaining rest: 4965mS 
+At location # 7 is pin D9 (DHT11): 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C age in seconds =  5.09  5.22 = last_attempted_read seconds ago. remaining rest: 0mS 
+At location # 8 is pin D10 (DHT22): 50.9% 21.2C 50.8% 21.1C 50.8% 21.1C 50.9% 21.1C 50.8% 21.1C age in seconds =  0.13  0.26 = last_attempted_read seconds ago. remaining rest: 1756mS 
+At location # 9 is pin D14 (DHT22): 50.8% 20.9C 50.7% 20.9C 50.7% 20.9C 50.8% 20.9C 50.7% 20.9C age in seconds =  1.99  0.03 = last_attempted_read seconds ago. remaining rest: 1975mS 
+At location #10 is pin D15 (DHT22): 48.8% 21.4C 48.8% 21.4C 48.8% 21.4C 48.8% 21.4C 48.9% 21.4C age in seconds =  1.84  1.97 = last_attempted_read seconds ago. remaining rest: 89mS 
+At location #11 is pin D16 (DHT11): 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C age in seconds =  0.74  0.86 = last_attempted_read seconds ago. remaining rest: 4167mS 
+At location #12 is pin D17 (DHT11): 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C age in seconds =  0.62  0.75 = last_attempted_read seconds ago. remaining rest: 4281mS 
+At location # 0 is pin D2 (DHT22): 44.1% 21.5C 44.2% 21.5C 44.3% 21.5C 44.4% 21.5C 44.4% 21.5C age in seconds =  0.45  0.57 = last_attempted_read seconds ago. remaining rest: 1449mS 
+At location # 1 is pin D3 (DHT11): 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C 35.0% 21.0C age in seconds =  2.42  2.55 = last_attempted_read seconds ago. remaining rest: 2524mS 
+At location # 2 is pin D4 (DHT22): 50.7% 21.0C 50.7% 21.0C 50.7% 21.0C 50.7% 21.0C 50.7% 21.0C age in seconds =  1.13  1.26 = last_attempted_read seconds ago. remaining rest: 782mS 
+At location # 3 is pin D5 (DHT22): 50.5% 21.3C 50.5% 21.3C 50.5% 21.3C 50.5% 21.3C 50.4% 21.3C age in seconds =  1.01  1.14 = last_attempted_read seconds ago. remaining rest: 900mS 
+At location # 4 is pin D6 (DHT22): 49.6% 21.7C 49.6% 21.6C 49.8% 21.7C 49.8% 21.6C 49.7% 21.6C age in seconds =  0.88  1.01 = last_attempted_read seconds ago. remaining rest: 1028mS 
+At location # 5 is pin D7 (DHT22): 51.9% 21.1C 52.0% 21.1C 51.9% 21.1C 51.9% 21.1C 51.8% 21.1C age in seconds =  0.75  0.88 = last_attempted_read seconds ago. remaining rest: 1145mS 
+At location # 6 is pin D8 (DHT11): 57.0% 18.0C 57.0% 18.0C 56.0% 18.0C 56.0% 18.0C 56.0% 18.0C age in seconds =  2.36  2.48 = last_attempted_read seconds ago. remaining rest: 2584mS 
+At location # 7 is pin D9 (DHT11): 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C 48.0% 21.0C age in seconds =  2.24  2.36 = last_attempted_read seconds ago. remaining rest: 2701mS 
+At location # 8 is pin D10 (DHT22): 51.0% 21.1C 51.0% 21.1C 51.0% 21.1C 50.9% 21.1C 50.9% 21.2C age in seconds =  1.46  1.59 = last_attempted_read seconds ago. remaining rest: 458mS 
+At location # 9 is pin D14 (DHT22): 51.2% 20.9C 51.3% 20.9C 51.5% 20.9C 51.6% 20.9C 51.5% 20.9C age in seconds =  1.24  1.37 = last_attempted_read seconds ago. remaining rest: 670mS 
+At location #10 is pin D15 (DHT22): 48.8% 21.4C 48.8% 21.4C 48.8% 21.4C 48.8% 21.4C 48.8% 21.4C age in seconds =  1.07  1.20 = last_attempted_read seconds ago. remaining rest: 833mS 
+At location #11 is pin D16 (DHT11): 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C 36.0% 21.0C age in seconds =  3.05  3.17 = last_attempted_read seconds ago. remaining rest: 1911mS 
+At location #12 is pin D17 (DHT11): 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C 36.0% 22.0C age in seconds =  2.93  3.06 = last_attempted_read seconds ago. remaining rest: 2026mS 
