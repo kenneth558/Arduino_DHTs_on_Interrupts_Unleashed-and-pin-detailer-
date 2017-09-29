@@ -51,7 +51,6 @@ volatile typedef struct one_line_device_protocols_supported //Make array of thes
 //until we support other protocols, just DHT11 and DHT22 are allowed for because we won't know in all the ways that others can differ    
 } DEVICE_PROTOCOL;
 
-volatile struct ISR_specific typedef ISRSPEC;
 const PROGMEM u8 confidence_depth = 5;
 
 volatile typedef struct device_specific
@@ -71,30 +70,33 @@ volatile typedef struct device_specific
     volatile u8* output_port_reg_addr;
     volatile u8* ddr_port_reg_addr;
     volatile u8* pin_reg_addr;
-    volatile ISRSPEC* my_isr_addr;
+    volatile ISRSPEC* my_isrspec_addr;
 } DEVSPEC;
-
+/*
 volatile typedef struct PIN_xref
 {
     u8 Dpin;
 //    u8 dev_index;
 //    u8 PIN_xref_dev[ NUM_DIGITAL_PINS ];
 } PINXREF;
-
+*/
 const u8 PROGMEM as_many_ports_as_a_board_could_ever_have = 26;
+/*
 volatile typedef struct PORT_xref
 {
     u8 PORT_xref[ as_many_ports_as_a_board_could_ever_have + 1 ];//Just remember when sparsing to adjust index one downward from original board port indexes so that PORTA if used would become index 0 even though the index for PORTA starts out as 1
 } PORTXREF;
-
+*/
+/*
 volatile typedef struct DEV_xref
 {
     u8 DEV_xref[ NUM_DIGITAL_PINS ];
 } DEVXREF;
+*/
 
 volatile typedef struct ISR_xref
 {
-    volatile ISRSPEC* my_isr_addr[ number_of_ISRs ];
+    volatile ISRSPEC* my_isrspec_addr[ number_of_ISRs ];
     volatile u8 ISR_xref[ number_of_ISRs ];
 } ISRXREF;
 
