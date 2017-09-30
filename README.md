@@ -27,6 +27,6 @@ I merely got this functional, not beautiful.  It is not intended for first-proje
 
 Progress being made: 
 
-This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  The Nano is exactly the same in this respect.  I am removing memory bloat to improve that situation and posting daily updates.  
+This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO (Nano shows exactly the same in this respect) - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat as I can to improve that situation and posting daily updates.  
 
 Going back to the Leonardo with its differences in serial communications, I am unable to command it to list DHT readings for the time being.  It does support 7 DHT devices, possibly eight IF you want to remove (break) the RX LED and solder a connecting wire to the positive side of it...not likely anyone would do that, so 7 devices it is.
