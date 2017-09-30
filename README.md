@@ -9,7 +9,7 @@ misc_maskportitems.h
 
 structs.h
 
-The main purpose of the interrupt is to avoid the time waste of polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well, making their claimed use of interrupts virtually meaningless.  This project is not a formal library, just some ISR code, ISR launcher code in setup(), DHT device detection and ISR pin change detection code, and a main loop() hello demo with rudimentary examples of how RH and temperatures are read from the data structures.  
+The main purpose of the interrupt is to avoid the time waste of polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well, making their claimed use of interrupts virtually meaningless.  This project is not a formal library, just some ISR code, ISR launcher code in setup(), DHT device detection and ISR pin change detection code, and a main loop() hello world demo with rudimentary examples of how RH and temperatures are read from the data structures.  
 
 I'll be working on some important streamlining and memory efficiency elements in the coming days.  At this point, the best I can say about the progress right now is that it is debugged and functions if your sketch can afford the memory hit.  
 
