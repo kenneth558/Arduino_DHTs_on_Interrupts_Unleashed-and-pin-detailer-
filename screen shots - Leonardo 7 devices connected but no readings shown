@@ -1,0 +1,119 @@
+
+
+Arduino DHTs on Interrupt Steroids Sketch
+
+This sketch will display the numbers of all digital pins with the ports and port masks
+for them, detect and display all DHT devices connected (even those on pins not
+supporting Pin Change Interrupts), and detect the existence of all Pin Change Interrupts
+supported by the microcontroller board and display them for you.
+
+IT LEARNS THE INTERRUPT DETAIL BY TOGGLING PINS, so all pins must be free to toggle for
+the results shown to be correct.
+
+If you need to, you may protect pins from being tested for devices by listing them in one
+of the two protected pin arrays.  The built-in LED renders its pin useless for DHT use,
+so that pin is included in the list of protected pins by default and is given an alternate
+function, if you need it, of being high during the duration of the device detection process.
+The intent is so it can be used to control signal-gating circuitry of your design and
+construction to effectively disconnect pin signals and protect driven devices from the
+extraneous toggling occurring during device detection.
+
+If you see nonsense characters displayed associated with the detection process, please
+take the time now to add your board's serial communication pins to one of these
+protecting arrays if you'll be using pins for serial communications.
+
+Examining environment.  This will take a few seconds...
+
+
+LIST OF 31 DIGITAL PINS
+Pin D0       :PORTD bit 2
+Pin D1       :PORTD bit 3 pin is protected by it being listed in a protected pins array
+Pin D2       :PORTD bit 1
+Pin D3       :PORTD bit 0
+Pin D4  (A6) :PORTD bit 4
+Pin D5       :PORTC bit 6
+Pin D6  (A7) :PORTD bit 7
+Pin D7       :PORTE bit 6
+Pin D8  (A8) :PORTB bit 4 --DHT connected--
+Pin D9  (A9) :PORTB bit 5 --DHT connected--
+Pin D10 (A10):PORTB bit 6 --DHT connected--
+Pin D11      :PORTB bit 7 --DHT connected--
+Pin D12 (A11):PORTD bit 6
+Pin D13      :PORTC bit 7 pin is protected by it being listed in a protected pins array, LED_BUILTIN 
+Pin D14      :PORTB bit 3 --DHT connected--
+Pin D15      :PORTB bit 1 --DHT connected--
+Pin D16      :PORTB bit 2 --DHT connected--
+Pin D17      :PORTB bit 0
+Pin D18 (A0) :PORTF bit 7
+Pin D19 (A1) :PORTF bit 6
+Pin D20 (A2) :PORTF bit 5
+Pin D21 (A3) :PORTF bit 4
+Pin D22 (A4) :PORTF bit 1
+Pin D23 (A5) :PORTF bit 0
+Pin D24 (A6) :PORTD bit 4
+Pin D25 (A7) :PORTD bit 7
+Pin D26 (A8) :PORTB bit 4
+Pin D27 (A9) :PORTB bit 5
+Pin D28 (A10):PORTB bit 6
+Pin D29 (A11):PORTD bit 6
+Pin D30      :PORTD bit 5
+Note: starting with digital pin number 24 that is a duplicate of digital pin number 4, one
+or more of these pins are virtual pins that are duplicates of real ones that have a lower
+number, in which case a device connected to such will only show as being connected the
+lower numbered pin.  Due to general Arduino memory space limitations, this sketch only lets
+you know of the first one.
+
+
+DHT devices found on pins:
+    D8  (A8) 
+    D9  (A9) 
+    D10 (A10)
+    D11      
+    D14      
+    D15      
+    D16      
+Total of 7 DHT devices are connected
+
+
+For this ISR ( ISR0 with PCMSK0 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
+0: Can be triggered by each voltage toggle occurring on D17      ( port PORTB bit mask 1 )
+1: Can be triggered by each voltage toggle occurring on D15      ( port PORTB bit mask 10 )
+2: Can be triggered by each voltage toggle occurring on D16      ( port PORTB bit mask 100 )
+3: Can be triggered by each voltage toggle occurring on D14      ( port PORTB bit mask 1000 )
+4: Can be triggered by each voltage toggle occurring on D8  (A8) ( port PORTB bit mask 10000 ) and on D26 (A8)  ( port PORTB bit mask 10000 )
+5: Can be triggered by each voltage toggle occurring on D9  (A9) ( port PORTB bit mask 100000 ) and on D27 (A9)  ( port PORTB bit mask 100000 )
+6: Can be triggered by each voltage toggle occurring on D10 (A10)( port PORTB bit mask 1000000 ) and on D28 (A10) ( port PORTB bit mask 1000000 )
+7: Can be triggered by each voltage toggle occurring on D11      ( port PORTB bit mask 10000000 )
+
+Summary of ISR-to-pin information:
+ISR0 - D-pins by PCMSK0 bit
+0: D17                            
+1: D15        DHT                 
+2: D16        DHT                 
+3: D14        DHT                 
+4: D8  (A8)   DHT and D26 (A8)  *       
+5: D9  (A9)   DHT and D27 (A9)  *       
+6: D10 (A10)  DHT and D28 (A10) *       
+7: D11        DHT                 
+
+
+DHT devices found on pins:
+    D8  (A8) 
+    D9  (A9) 
+    D10 (A10)
+    D11      
+    D14      
+    D15      
+    D16      
+Total of 7 DHT devices are connected
+
+
+* = digitalPinToPCMSKbit() function reports the wrong PCMSK bit for this pin.  This software product will work around it; other software will likely not correct the report error
+
+Factory sketch functions: enter the letter A or a number between 0 and 7 with your entire
+entry enclosed between these two characters: < and >.  Entering the letter A so enclosed
+will list all DHT devices each with its last 5 values obtained.  Entering the index
+number of any selected device will do the same for the one device only.  Reading errors
+that occur are displayed asynchronously by void loop() as they happen.
+
+
