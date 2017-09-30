@@ -4126,7 +4126,7 @@ if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 }
 Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
-Serial.print( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) );
+Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
 Serial.print( F( " with your entire" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
