@@ -17,7 +17,7 @@ Optionally, add your main functionality to void loop() if you want more than the
 
 If you just want to see which pins of your board are served by PC ISRs and which ISR it is, this sketch is exactly what you need as well.  It is not hindered by the incomplete OEM definitions that support digitalPinToPCICRbit() and digitalPinToPCMSKbit() functions, as is the case with the official Mega 2560 IDE environment ISR1.  Screen shots of that functionality during board startup are posted here for the boards I had at hand.  Each Arduino type has a different amount of available RAM, and some boards are thusly limited to less than the maximum number of devices. I'll be working on more memory-efficient modifications while you try this version.  Note that LED_BUILTIN and any other LEDs will preclude their pins from being used for DHT devices because they prevent voltage pull-up.
 
-PROOF OF CONCEPT ONLY,  Please forgive the coding ugliness for a while so I can get caught up on other projects :-)
+Due to its lack of code beauty, the only claims I'll stand behind right now is that this project is PROOF OF CONCEPT ONLY.  Please forgive the coding ugliness for a while so I can get caught up on other projects :-)
 I'll be working on some important streamlining and memory efficiency elements in the coming days when I pick this back up.  At this point, the best I can say about the progress right now is that it is debugged and functions if your sketch can afford the memory hit, and if you are willing to write a line or two of any shim code you need to give this some usefulness in your application.  
 
 This project utilizes two different interrupt service routine types:  one "Pin Change Interrupt" pin is required for every DHT device connected serviced by an PC ISR code segment, and an additional over-all process-monitoring/watchdog code segment that resides in "Timer/Counter Compare Match A" interrupt code. (This code does not use any of the "2-wire Serial Interface", "External Interrupt", "Watchdog", "Timer/Counter Overflow", etc. types of interrupts.)
@@ -38,6 +38,8 @@ I merely got this functional, not beautiful.  It is not intended for first-proje
 Progress being made: 
 
 This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO (Nano shows exactly the same in this respect) - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat as I can to improve that situation and posting daily updates.  
+
+Changes you could make to not run out of memory due to device count: 1) Reduce the value of the "confidence" variable, and 2) move the timestamp translation from the compare-match code into the PCI code to allow you to reduce the footprint of the timestamps element array from 4 bytes per timestamp to 1 byte per timestamp (there are 42 timestamp elements in that array, one array for each ISR).
 
 Going back to the Leonardo with its differences in serial communications, I am unable to command it to list DHT readings for the time being.  It does support 7 DHT devices, possibly eight IF you want to remove (break) the RX LED and solder a connecting wire to the positive side of it...not likely anyone other than me would do that, so 7 devices it is.
 
