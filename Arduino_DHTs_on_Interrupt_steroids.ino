@@ -45,17 +45,18 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
         u8 tmp_sandbox;
         u8 filled_vals;
         u8 ilvr;
-        if( strstr( receivedChars, "a" ) || strstr( receivedChars, "A" ) )
+        u8 pin;
+        if( ( receivedChars[ 0 ] == 'a' ) || ( receivedChars[ 0 ] == 'A' ) )
         {
             for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
             {
                 this_Devspec_address = &Devspec[ devspec_index ];
-                tmp_sandbox;
                 filled_vals = 0;
                 ilvr = this_Devspec_address->index_of_next_valid_readings_sets;
                 Serial.print( F( "At location #" ) );
                 if( devspec_index < 10 ) Serial.print( F( " " ) );
                 Serial.print( devspec_index );
+                if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
                 Serial.print( F( " is pin D" ) );
                 Serial.print( this_Devspec_address->Dpin );
                 Serial.print( F( " (DHT" ) );
@@ -99,18 +100,16 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 Serial.flush();
             }
         }
-        else if( atoi( receivedChars ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) )
+        else if( ( ( receivedChars[ 0 ] > 47 ) && ( receivedChars[ 0 ] < 58 ) ) && ( atoi( receivedChars ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
         {
-    //        Serial.print("This just in ... ");
-    //        Serial.println( atoi( receivedChars ) );
-    //        Serial.print( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) );
-    //        Serial.print( F( " " ) );
             this_Devspec_address = &Devspec[ atoi( receivedChars ) ];
-            tmp_sandbox;
+SHOW_A_SENSOR:;
             filled_vals = 0;
             ilvr = this_Devspec_address->index_of_next_valid_readings_sets;
             Serial.print( F( "At location #" ) );
+            if( atoi( receivedChars ) < 10 ) Serial.print( F( " " ) );
             Serial.print( atoi( receivedChars ) );
+            if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
             Serial.print( F( " is pin D" ) );
             Serial.print( this_Devspec_address->Dpin );
             Serial.print( F( " (DHT" ) );
@@ -147,6 +146,27 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
             Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
             Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
             Serial.print( F( "mS " ) );
+            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        }
+        else if( ( ( receivedChars[ 0 ] == 'd' ) || ( receivedChars[ 0 ] == 'D' ) ) )// && ( atoi( &receivedChars[ 1 ] ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
+        {
+            for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
+            {
+                pin = atoi( &receivedChars[ 1 ] );
+                if( Devspec[ devspec_index ].Dpin == pin )
+                {
+                    this_Devspec_address = &Devspec[ devspec_index ];
+                    goto SHOW_A_SENSOR;
+                }
+            }
+            Serial.print( F( "That pin has no DHT sensor on it" ) );
+            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        }
+        else
+        {
+            Serial.print( F( "Each DHT connected is using " ) );
+            Serial.print(  sizeof( Devspec [ 0 ] ) );
+            Serial.print( F( " bytes in memory" ) );
             Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
         }
         newData = false;
@@ -258,14 +278,19 @@ Serial.end();
 Serial.begin( 57600 ); //This speed is very dependent on the host's ability
 Serial.setTimeout( 10 ); //
 while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
+Serial.print( freeRam() );
+Serial.print( F( " bytes of free RAM for variables" ) );
+Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
 {
     Serial.print( F( "No DHT devices were detected, so the following statements are null and void:" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 }
-Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
+Serial.print( F( "Factory sketch functions: enter the letter A or an index number between 0 and " ) );
 Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
-Serial.print( F( " with your entire" ) );
+Serial.print( F( " or the" ) );
+Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.print( F( "letter D immediately followed by (no space between) a digital pin number with your entire" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -273,9 +298,9 @@ Serial.print( F( "will list all DHT devices each with its last " ) );
 Serial.print( confidence_depth );
 Serial.print( F( " values obtained.  Entering the index" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
+Serial.print( F( "number or D and pin number of any selected device will do the same for the one device only." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "that occur are displayed asynchronously by void loop() as they happen." ) );
+Serial.print( F( "Reading errors that occur are displayed asynchronously while the void loop() sees them." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.flush();
 }
@@ -290,12 +315,16 @@ for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_i
     DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
     if( this_Devspec_address->consecutive_read_failures )
     {
+        Serial.print( F( "Pin D" ) );
         Serial.print( this_Devspec_address->Dpin );
+        Serial.print( F( " " ) );
+        print_analog_if_exists( this_Devspec_address->Dpin );
         Serial.print( F( " (DHT" ) );
         if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
         else Serial.print( F( "11" ) );
-        Serial.print( F( ") failures " ) );
+        Serial.print( F( ") showing " ) );
         Serial.print( this_Devspec_address->consecutive_read_failures );
+        Serial.print( F( " failures " ) );
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     }
 }
