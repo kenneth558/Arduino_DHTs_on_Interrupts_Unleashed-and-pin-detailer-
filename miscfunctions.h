@@ -56,7 +56,7 @@ ISRXREF* Isrxref = 0;
 //PINXREF* Pinxref;
 //PORTXREF* Portxref;
 ISRSPEC* Isrspec;
-PORTSPEC* Portspec;
+//PORTSPEC* Portspec;
 DEVSPEC* Devspec;
 
 bool mswindows = false;  //Used for line-end on serial outputs.  Will be determined true during run time if a 1 Megohm ( value not at all critical as long as it is large enough ohms to not affect operation otherwise ) resistor is connected from pin LED_BUILTIN to PIN_A0
@@ -933,10 +933,10 @@ this_port_done_for_dht_detection:
         )
 */
 
-u8 Portspec_ready_port_index_adjust ( u8 portindex )
-{
-    return( strchr( ports_string_in_heap_array, ( char )( portindex + 64 ) ) - ports_string_in_heap_array );
-}
+//u8 Portspec_ready_port_index_adjust ( u8 portindex )/
+//{
+//    return( strchr( ports_string_in_heap_array, ( char )( portindex + 64 ) ) - ports_string_in_heap_array );
+//}
 
 void delay_if_device_triggered( u8 pin )
 {
@@ -1162,7 +1162,7 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A2()//Suggested default purp
  }
 
 bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
-{ 
+{
   volatile u8 PCINT_pins_by_PCMSK_and_ISR[ 2 ][ 8 ][ number_of_ISRs ];
 
 // size of ISR_WITH_DHT_port_pinmask_stack_array at entry of this function the first time: 
@@ -3249,9 +3249,9 @@ PINSPEC* Pinspec;
 DEVSPEC* Devspec;
 */
     Isrspec = ( ISRSPEC* )( ( long unsigned int )Isrxref + sizeof( ISRXREF ) );
-    Portspec = ( PORTSPEC* )( ( long unsigned int )Isrspec + ( sizeof( ISRSPEC) * number_of_ISRs ) );
-    Devspec = ( DEVSPEC* )( ( long unsigned int )Portspec + ( sizeof( PORTSPEC ) * populated_port_count ) );
-    ports_string_in_heap_array = ( char* )( ( long unsigned int )Devspec + ( sizeof( DEVSPEC ) * number_of_devices_found ) );
+    PORTSPEC Portspec[ populated_port_count ];// = ( PORTSPEC* )( ( long unsigned int )Isrspec + ( sizeof( ISRSPEC) * number_of_ISRs ) );
+    Devspec = ( DEVSPEC* )( ( long unsigned int )Isrspec + ( sizeof( ISRSPEC) * number_of_ISRs ) );
+    ports_string_in_heap_array = ( char* )( ( long unsigned int )Devspec + ( sizeof( DEVSPEC ) * number_of_devices_found ) );//in heap b/c we didn't know size until now
     strcpy( ports_string_in_heap_array, string_of_all_ports_that_are_populated );//This makes ports_string_in_heap_array not suitable for interrupt findings if any pins served by interrupts don't have devices on them!!!
 /* 
     Serial.begin( 57600 ); //This speed is very dependent on the host's ability
@@ -3841,14 +3841,14 @@ DEVSPEC* Devspec;
     }
     delay( 5 );//to allow devices to settle down before making their pins into outputs HIGH
     
-    for ( u8 port_placement = 0; port_placement < ( ( unsigned long )Devspec - ( unsigned long )Portspec )/ sizeof( PORTSPEC ); port_placement++ )
+    for ( u8 port_placement = 0; port_placement < populated_port_count; port_placement++ )
     {
         *( Portspec[ port_placement ].this_port_mode_reg ) = Portspec[ port_placement ].mask_of_safe_pins_to_detect_on;//Make safe and eligible pins into outputs
         *( Portspec[ port_placement ].this_port_main_reg ) = Portspec[ port_placement ].mask_of_safe_pins_to_detect_on; // set output pins HIGH for 2 seconds that are still eligible
     }
     delay( 2000 );//some types of device needed their line high like this for their wait period, so we do it for entire system
-    unsigned long time_this_port_tested_millis[ ( ( unsigned long )Devspec - ( unsigned long )Portspec )/ sizeof( PORTSPEC ) ];
-    for ( u8 port_placement = 0; port_placement < ( ( unsigned long )Devspec - ( unsigned long )Portspec )/ sizeof( PORTSPEC ); port_placement++ )
+    unsigned long time_this_port_tested_millis[ populated_port_count ];//populated_port_count
+    for ( u8 port_placement = 0; port_placement < populated_port_count; port_placement++ )
     {//find dht devices each port, number of ports = ( ( unsigned long )Pinspec - ( unsigned long )Portspec )/ sizeof( PORTSPEC )
            
     /* 
