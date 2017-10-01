@@ -7,6 +7,8 @@ ISRs.h
 
 misc_maskportitems.h
 
+miscfunctions.h
+
 structs.h
 
 The main purpose of the interrupt is to avoid the time waste of polling.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well, making their claimed use of interrupts virtually meaningless, not to mention their sad (and now unnecessary) limitation of only a single DHT device per board.  You can read all the sensors you want to with proper application of the interrupt code posted here.  Connect them all up and go - the setup() code searches every digital pin and detects every device for you.  The ones on PCI pins will start streaming their data after the forced 5 second rest period and readings will become available with ages.  The last 5 readings from every device are available.  The age is calculated of the most recent reading of that pin.  Devices connected to pins NOT supported by PCIs will still be shown in the startup print, but this code won't operate them - you'll have to use legacy code to read those sensors.  Just make sure that, if the legacy code uses interrupts, it doesn't disable interrupts for too long so as to interfere with this code.  Empiric experimentation should enable you to adequately assess compatibility.
