@@ -45,7 +45,7 @@ Changes you could make to not run out of memory due to device count:
 
 2) move the timestamp translation from the compare-match code into the PCI code to allow you to reduce the footprint of the timestamps element array from 4 bytes per timestamp to 1 byte per timestamp (there are 42 timestamp elements in that array, one array for each ISR); 
 
-3) malloc the heap BEFORE collecting the ISR details needing to be stored so those details aren't taking up stack space during the malloc.  This approach would either mean you manually determine heap size needed or would take 2 passes through the ISR detection function.  I had started on the 2 pass concept but have not finished it.
+3) malloc the heap BEFORE collecting the ISR details needing to be stored so those details aren't taking up stack space during the malloc.  This approach would either mean you manually determine heap size needed or would take 2 passes through the ISR detection function, between which the program execution would go as far back to main (either setup() or loop()) for the malloc so the stack is minimized for the malloc.  I had started on the 2 pass concept but have not finished it.
 
 Going back to the Leonardo with its differences in serial communications, I am unable to command it to list DHT readings for the time being.  It does support 7 DHT devices, possibly eight IF you want to remove (break) the RX LED and solder a connecting wire to the positive side of it...not likely anyone other than me would do that, so 7 devices it is.
 
