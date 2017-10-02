@@ -1,7 +1,7 @@
       Arduino DHTs on Interrupt steroids
 Files you need to place in your sketch directory:
 
-Arduino_DHTs_on_Interrupt_steroids.ino
+Arduino_DHTs_on_Interrupt_Unleashed.ino
 
 ISRs.h
 
