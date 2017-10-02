@@ -4236,7 +4236,7 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.flush();
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( F( "Arduino DHTs on Interrupt Steroids Sketch" ) );
+    Serial.print( F( "Arduino DHTs on Interrupts Unleashed Sketch" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "This sketch will display the numbers of all digital pins with the ports and port masks" ) );
