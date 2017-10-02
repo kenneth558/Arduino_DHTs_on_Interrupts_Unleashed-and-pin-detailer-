@@ -39,13 +39,13 @@ Progress being made:
 
 This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO (Nano shows exactly the same in this respect) - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat as I can to improve that situation and posting daily updates.  
 
-Changes you could make to not run out of memory due to device count: 
+Changes you could make to not run out of memory due to device count on boards with less memory: 
 
-1) Reduce the value of the "confidence" variable; 
+1) Reduce the value of the "confidence" variable; (expect little in return)
 
-2) move the timestamp translation from the compare-match code into the PCI code to allow you to reduce the footprint of the timestamps element array from 4 bytes per timestamp to 1 byte per timestamp (there are 42 timestamp elements in that array, one array for each ISR); 
+2) move the timestamp translation from the compare-match code into the PCI code to allow you to reduce the footprint of the timestamps element array from 4 bytes per timestamp to 1 byte per timestamp (there are 42 timestamp elements in that array, one array for each ISR); (expect noticible but modest return)
 
-3) malloc the heap BEFORE collecting the ISR details needing to be stored so those details aren't taking up stack space during the malloc.  This approach would either mean you manually determine heap size needed or would take 2 passes through the ISR detection function, between which the program execution would go as far back to main (either setup() or loop()) for the malloc so the stack is minimized for the malloc.  I had started on the 2 pass concept but have not finished it.
+3) malloc the heap BEFORE collecting the ISR details needing to be stored so those details aren't taking up stack space during the malloc.  This approach would either mean you manually determine heap size needed or would take 2 passes through the ISR detection function, between which the program execution would go as far back to main (either setup() or loop()) for the malloc so the stack is minimized for the malloc.  This approach would also mean you could conceivably use up ALL available variable memory, leaving none for your main loop() code.  I had started on the 2 pass concept but have not finished it. (expect greatest return with this method)
 
 Going back to the Leonardo with its differences in serial communications, I am unable to command it to list DHT readings for the time being.  It does support 7 DHT devices, possibly eight IF you want to remove (break) the RX LED and solder a connecting wire to the positive side of it...not likely anyone other than me would do that, so 7 devices it is.
 
