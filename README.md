@@ -39,7 +39,7 @@ Progress being made:
 
 This sketch works just fine on the Mega 2560 because that board has plenty of memory.  This sketch is very limited on boards with less memory.  Example is on UNO (Nano shows exactly the same in this respect) - It only has enough memory for 13 devices, and the closer you get to 13, the less memory is left for your own main sketch.  I am removing memory bloat as I can to improve that situation and posting daily updates.  
 
-Changes you could make to not run out of memory due to device count on boards with less memory: 
+Changes you could make so as not to run out of memory due to device count on boards with less memory: 
 
 1) Reduce the value of the "confidence" variable; (expect little or no return for your effort)
 
