@@ -41,7 +41,7 @@ This sketch works just fine on the Mega 2560 because that board has plenty of me
 
 Changes you could make to not run out of memory due to device count on boards with less memory: 
 
-1) Reduce the value of the "confidence" variable; (expect little in return)
+1) Reduce the value of the "confidence" variable; (expect little or no return for your effort)
 
 2) move the timestamp translation from the compare-match code into the PCI code to allow you to reduce the footprint of the timestamps element array from 4 bytes per timestamp to 1 byte per timestamp (there are 42 timestamp elements in that array, one array for each ISR); (expect noticible but modest return)
 
