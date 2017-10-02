@@ -1,7 +1,7 @@
-      Arduino DHTs on Interrupt Unleashed
+      Arduino DHTs on Interrupts Unleashed
 Files you need to place in your sketch directory:
 
-Arduino_DHTs_on_Interrupt_Unleashed.ino
+Arduino_DHTs_on_Interrupts_Unleashed.ino
 
 ISRs.h
 
