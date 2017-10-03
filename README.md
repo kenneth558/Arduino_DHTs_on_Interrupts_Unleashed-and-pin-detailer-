@@ -1,7 +1,7 @@
       Arduino DHTs on Interrupts Unleashed          (previously named Arduino_DHTs_on_Interrupt_steroids)
 
 
-I am unable to understand what has happened either to my Arduino programming environment in Linux Mint 18 OR to my cabling OR to my Arduinos OR WHAT, but I can no longer get consistent results to know if the code I am posting here will function for you.  None of it functions for me any more, not even old backups that were known good at the time.  As you read this README.md, please be aware that I have pulled the main .ino file from public consumption here.  I had pulled all the meat out of it and put it in the headers, so it will be possible for anyone with halfway decent Arduino programming skills and GitHub knowledge to know how to reverse-engineer the headers I've left for you and get it running, if you want to.  For the time being, I've got taxes to file, so Lord bless and we'll get back to this later....
+As you read this README.md, please be aware that I have pulled the main .ino file from public consumption here.  I had pulled all the meat out of it and put it in the headers, so it will be possible for anyone with halfway decent Arduino programming skills and GitHub knowledge to know how to reverse-engineer the headers I've left for you and get it running, if you want to.  WHY, you ask?  Because my logic for cycling through the ISRs and devices is a bit faulty in that it is requiring at least one device on each ISR, and apparently the first bit of the ISR mask doesn't count.  That is just a quick assessment, it may not be entirely accurate.  For the time being, I've got taxes to file, so Lord bless and we'll get back to this later....
 
 
 
