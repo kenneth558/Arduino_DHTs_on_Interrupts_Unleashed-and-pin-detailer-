@@ -1,3 +1,4 @@
+const PROGMEM u8 confidence_depth = 3;
 #include "miscfunctions.h"
 
 void setup() 
