@@ -165,94 +165,6 @@ void mem_defrag_alert()
 
  }
 
-bool compact_the_heap( bool somevar )
-{ 
-    return( true );
-/*        previous_ = ( void* );//before a free instruction, this line will match the names of the pointers
-    free ( previous_ISR_WITH_DHT_port_pinmask_stack_array ); //Just as a matter of good practice, doesn't really do anything here
-    Elements_in = ( ELEMENTS_IN* )malloc( \
-        sizeof( ELEMENTS_IN ) + \
-        ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
-        ( sizeof( PORTSPEC ) * number_of_ports_found ) + \
-        ( sizeof( PINSPEC ) * NUM_DIGITAL_PINS ) + \
-         strlen( populated_ports_string ) + 1 \
-        );//not using DEVSPEC at this time *//* not using DEVICE_PROTOCOL at this time */
-
-//Prepare to sparse the array:  the following is obsolete
-/* */
-    u8 trimmed_size_with_ISR = 0;
-    u8 trimmed_size_without_ISR = 0;
-/*
-    for ( u8 tmp_index = 0; tmp_index < number_of_ports_found ; tmp_index++ )
-        if ( ( bool ) *&ISR_WITH_DHT_port_pinmask_stack_array[ tmp_index + ( 4 * number_of_ports_found ) ] )
-            trimmed_size_with_ISR++;
-        else if ( ( bool ) *&ISR_WITH_DHT_port_pinmask_stack_array[ tmp_index + ( 3 * number_of_ports_found ) ] )
-            trimmed_size_without_ISR++;
-    
-    u8 ISR_WITH_DHT_port_pinmask_stack_array_tmp[ element_bytes_in_ISR_part_of_port_pinmask * trimmed_size_with_ISR ];
-    u8 DHT_without_ISR_port_pinmask_stack_array_tmp[ element_bytes_in_ISR_part_of_port_pinmask * trimmed_size_without_ISR ];
-*/
-    free ( ISR_WITH_DHT_port_pinmask_stack_array );
-/* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "Line 1001" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
-/* */
-    ISR_WITH_DHT_port_pinmask_stack_array = ( byte* )malloc( element_bytes_in_ISR_part_of_port_pinmask * ( trimmed_size_with_ISR + trimmed_size_without_ISR ) );
-//    number_of_elements_in_ISR_part_of_port_pinmask_stack = trimmed_size_with_ISR;  These comments are here as a reminder of what they will become when finalized
-//    number_of_elements_in_non_ISR_DHT_ports_stack = trimmed_size_without_ISR;  These comments are here as a reminder of what they will become when finalized
-// total number of elements in array stack = ( number_of_elements_in_ISR_part_of_port_pinmask_stack + number_of_elements_in_non_ISR_DHT_ports_stack )
-/* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "Line 1017" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
-/* */
-    if( ISR_WITH_DHT_port_pinmask_stack_array == NULL ) return ( false );
-/* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
-        Serial.setTimeout( 10 ); //
-        while ( !Serial ) { 
-          ; // wait for serial port to connect. Needed for Leonardo's native USB
-        }
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "Line 2461" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.flush();
-        Serial.end();
-/* */
-
-    if ( previous_ISR_WITH_DHT_port_pinmask_stack_array != NULL && previous_ISR_WITH_DHT_port_pinmask_stack_array != ISR_WITH_DHT_port_pinmask_stack_array )//  Entered state of possibility of memory fragmentation
-    { 
-        if ( previous_ISR_WITH_DHT_port_pinmask_stack_array < ISR_WITH_DHT_port_pinmask_stack_array ) mem_frag_alert();
-        else mem_defrag_alert();
-    }
-    previous_ISR_WITH_DHT_port_pinmask_stack_array = ISR_WITH_DHT_port_pinmask_stack_array;
-
-    for( u8 tmp_index = 0; tmp_index < number_of_elements_in_ISR_part_of_port_pinmask_stack; tmp_index++ )
-    { 
-//        for ( u8 tmp1_index = 0; tmp1_index < element_bytes_in_ISR_part_of_port_pinmask; tmp1_index++ )
-//            *&ISR_WITH_DHT_port_pinmask_stack_array[ tmp_index + ( tmp1_index * ( trimmed_size_with_ISR + trimmed_size_without_ISR ) ) ] = ISR_WITH_DHT_port_pinmask_stack_array_tmp[ tmp_index + ( tmp1_index * ( trimmed_size_with_ISR + trimmed_size_without_ISR ) ) ];
-    }
-    
-    //    ptr_ports_with_ISRs_string = &ports_with_ISRs_string[ 0 ];
-    //    return ( &ports_with_ISRs_string[ 0 ] );
-    //    return ( &ports_with_ISRs_string[ 0 ] );
-
-}
 
 bool pin_in_protected_arrays( u8 pin )
 { 
@@ -1039,13 +951,10 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A0() //default purpose for t
 #endif
  }
 
-unsigned short resistor_between_LED_BUILTIN_and_PIN_A1()//Suggested default purpose for this is to signify the verbosity level end-user wants, no resistor = max verbosity, user can utilize various resistor configurations to adjust verbosity
-{ //OBSOLETE:The advantage of a sparsed memory model is that memory use is minimized by this process so that maximum memory remains for other, user-added functionality.  The disadvantage is that if the end-user needs to add DHT
-//  devices without rebooting the uController, memory fragmentation of the heap is likely; thus, rebooting the uController might be advisable for high-reliable operation with that memory model when DHT devices are added, subtracted or changed around.
-//  The default ( no resistor ) is for maximum capability of this software product ( no memory fragmentation when devices are changed without rebooting ) which leaves a little less memory for end-user-added functionality.
-//Need to detect any device connected to this pin and add delay for it/them
+unsigned short resistor_between_LED_BUILTIN_and_PIN_A1()//Default purpose for this is to force minimalist memory useage at the expense of ISR timing stability and ability to offset + and - 4 uSec bit translating when CRC errors occur
+{ 
 #ifndef PIN_A1
-        return ( ( unsigned short ) -1 );
+    return ( ( unsigned short ) -1 );
 #else
     pinMode( LED_BUILTIN, OUTPUT );
     digitalWrite( LED_BUILTIN, HIGH );
@@ -1101,8 +1010,10 @@ unsigned short resistor_between_LED_BUILTIN_and_PIN_A1()//Suggested default purp
 #endif
  }
 
-unsigned short resistor_between_LED_BUILTIN_and_PIN_A2()//Suggested default purpose for this is for end-user to indicate the host system might provide bootup configuration information.  True means to ask host and wait a short while for response.  An alternate purpose is to modify the purposes of the others 
-//or to set the speed v. memory useage mode.
+unsigned short resistor_between_LED_BUILTIN_and_PIN_A2()//Suggested default purpose for this is for end-user to indicate the host system might provide bootup configuration information.  True means to ask host and wait a short while for response.  
+//An alternate purpose is to modify the purposes of the others 
+//or to set the speed v. memory useage mode
+//or to signify the verbosity level end-user wants, no resistor = max verbosity, user can utilize various resistor configurations to adjust verbosity
 { //Need to detect any device connected to this pin and add delay for it/them
 #ifndef PIN_A2
         return ( ( unsigned short ) -1 );
@@ -2808,9 +2719,11 @@ Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 
 
 
-bool build_from_nothing()
+unsigned long build_from( u8 zero_means_just_return_mem_size_to_malloc )//non-zero is the number of devices found in the previous run.  Need to find same number
 {
 /* */
+    if( !zero_means_just_return_mem_size_to_malloc )
+    {
         Serial.begin( 57600 ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
@@ -2820,6 +2733,7 @@ bool build_from_nothing()
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
         Serial.flush();
         Serial.end();
+    }
     u8 duplicate_pin_higher = 0;
     u8 duplicate_pin_lower = 0;
     if ( F_CPU != 16000000 )
@@ -2871,6 +2785,7 @@ bool build_from_nothing()
 //        mem_frag_alert();//In this case this would mean the previous working array was quite small, less than 27 bytes
     previous_ISR_WITH_DHT_port_pinmask_stack_array = ( byte* )pre_array_boards_ports_string;//everywhere else, this line will go prior to the free instruction above, and it will better match the names of the pointers
     number_of_ports_found = 0;
+    if( zero_means_just_return_mem_size_to_malloc ) zero_means_just_return_mem_size_to_malloc = number_of_devices_found;//from last run
     number_of_devices_found = 0;
     pre_array_boards_ports_string[ 0 ] = 0;
     byte eligible_devices_this_port = 0;
@@ -2955,6 +2870,8 @@ bool build_from_nothing()
             }
         }
     }
+    if( zero_means_just_return_mem_size_to_malloc && number_of_devices_found != zero_means_just_return_mem_size_to_malloc )
+    return( ( unsigned long )false );
 //At this point we have an array called pre_array_devspec_index holding sparsed pin numbers of devices
 // we know the number of elements and stored that number in number_of_devices_found
 // array called string_of_all_ports_that_are_populated holding sparsed port letters of device-populated ports
@@ -3062,14 +2979,18 @@ bool build_from_nothing()
         Serial.end();
  */
 
-unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
-        ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
-        ( sizeof( PORTSPEC ) * populated_port_count ) + \
-        ( sizeof( DEVSPEC ) * number_of_devices_found ) + \
-         strlen( string_of_all_ports_that_are_populated );//string_of_all_ports_that_are_populated
-
-        free( ( void* )Isrxref );
-    Isrxref = ( ISRXREF* )malloc( main_array_size_now );
+    unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
+            ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
+            ( sizeof( DEVSPEC ) * number_of_devices_found ) + \
+             strlen( string_of_all_ports_that_are_populated ) + \
+             1;//string_of_all_ports_that_are_populated
+    
+    if( !zero_means_just_return_mem_size_to_malloc )
+    {
+            free( ( void* )Isrxref );
+            return( main_array_size_now );
+//    Isrxref = ( ISRXREF* )malloc( main_array_size_now );
+    }
 
 
 
@@ -3253,6 +3174,7 @@ DEVSPEC* Devspec;
     Devspec = ( DEVSPEC* )( ( long unsigned int )Isrspec + ( sizeof( ISRSPEC) * number_of_ISRs ) );
     ports_string_in_heap_array = ( char* )( ( long unsigned int )Devspec + ( sizeof( DEVSPEC ) * number_of_devices_found ) );//in heap b/c we didn't know size until now
     strcpy( ports_string_in_heap_array, string_of_all_ports_that_are_populated );//This makes ports_string_in_heap_array not suitable for interrupt findings if any pins served by interrupts don't have devices on them!!!
+    ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] = 0xFF;//marker that disappears when stack and heap collide (out of memory)
 /* 
     Serial.begin( 57600 ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
@@ -3901,7 +3823,7 @@ DEVSPEC* Devspec;
 /* */
 /* 
 //    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-        Serial.print( F( "Now reading the array at end of build_from_nothing()" ) );
+        Serial.print( F( "Now reading the array at end of build_from()" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     for( u8 tmp_indx = 0; tmp_indx < sizeof PORTSPEC / sizeof *PORTSPEC; tmp_indx++ )
     { 
@@ -4016,6 +3938,7 @@ DEVSPEC* Devspec;
 /*  */
 //        while ( digitalPinToPortRegister( pinToOutputPort( pin ) ) != port_indexes_ddrmasks_and_pinlevels[ i ][ 0 ][ 0 ] && i < ( sizeof( port_indexes_ddrmasks_and_pinlevels ) )/3 ) i++;
 //        ports_with_DHTs_indexes_ddrmasks_and_pinlevels[ from_pins_TOTAL_PORTS++ ][ 0 ][ 0 ];
+    return( ( unsigned long )true );
 }
 
 const byte numChars = 32;
@@ -4078,7 +4001,9 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
                 Serial.print( F( " is pin D" ) );
                 Serial.print( this_Devspec_address->Dpin );
-                Serial.print( F( " (DHT" ) );
+                Serial.print( F( " " ) );
+                print_analog_if_exists( this_Devspec_address->Dpin );
+                Serial.print( F( "(DHT" ) );
                 if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
                 else Serial.print( F( "11" ) );
                 Serial.print( F( "): " ) );
@@ -4089,7 +4014,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                     Serial.print( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( u8 )( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ] );
                     Serial.print( F( "." ) );
                     Serial.print( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( u8 )( 1 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ) ] );
-                    Serial.print( F( "% " ) );
+                    Serial.print( F( "%" ) );
             
                     for( u8 ik = filled_vals = 0; ik < confidence_depth; ik++ )
                         if( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ik ) ] )
@@ -4099,6 +4024,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                     if( ( this_Devspec_address->last_valid_data_bytes_from_dht_device[ 2 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ] & 0x7F ) < 10 ) Serial.print( F( " " ) );
                     if( tmp_sandbox > ( filled_vals >> 1 ) )
                         Serial.print( F( "-" ) );
+                    else Serial.print( F( " " ) );
             
                     Serial.print( this_Devspec_address->last_valid_data_bytes_from_dht_device[ 2 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ] & 0x7F );
                     Serial.print( F( "." ) );
@@ -4131,7 +4057,9 @@ SHOW_A_SENSOR:;
             if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
             Serial.print( F( " is pin D" ) );
             Serial.print( this_Devspec_address->Dpin );
-            Serial.print( F( " (DHT" ) );
+            Serial.print( F( " " ) );
+            print_analog_if_exists( this_Devspec_address->Dpin );
+            Serial.print( F( "(DHT" ) );
             if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
             else Serial.print( F( "11" ) );
             Serial.print( F( "): " ) );
@@ -4283,12 +4211,9 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
 //UNO has 1761 bytes of free ram here in unsparsed model: as follows
 //Sketch uses 28810 bytes (89%) of program storage space. Maximum is 32256 bytes.
 //Global variables use 379 bytes (18%) of dynamic memory, leaving 1669 bytes for local variables. Maximum is 2048 bytes.
-    unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
-    if ( wincheck > 0 && wincheck < 101 ) mswindows = true ; else mswindows = false;
-    build_from_nothing();
-    delay( 2000 );
+    if( !( bool )build_from( 1 ) ) return( false );//restart due to inconsistent results determining number of devices
     number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR = 0;    //This tells reset_ISR_findings_and_reprobe() that we need this variable re-valued to know how large the ports_with_DHT_devices... array must be initialized for
-    reset_ISR_findings_and_reprobe ( false ); //uses number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR to build ptr_to_portspecs_stack
+    reset_ISR_findings_and_reprobe( false ); //uses number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR to build ptr_to_portspecs_stack
     TIMSK0 |= 2;  //enables the compare value for match A , = 1 go back to normal.  First run through
 Serial.flush();
 Serial.end();
@@ -4326,6 +4251,7 @@ Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "Reading errors that occur are displayed asynchronously while the void loop() sees them." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.flush();
+return( true );
 }
 
 void demo_input_check()
