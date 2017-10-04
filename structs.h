@@ -51,7 +51,7 @@ volatile typedef struct one_line_device_protocols_supported //Make array of thes
 //until we support other protocols, just DHT11 and DHT22 are allowed for because we won't know in all the ways that others can differ    
 } DEVICE_PROTOCOL;
 
-const PROGMEM u8 confidence_depth = 5;
+const PROGMEM u8 confidence_depth = 3;
 
 volatile typedef struct device_specific
 {//The array of these elements gets built in the device-detection function, which only knows the port, doesn't even know how many devices have been found from previous runs to know the index where to put the ones found
@@ -72,27 +72,7 @@ volatile typedef struct device_specific
     volatile u8* pin_reg_addr;
     volatile ISRSPEC* my_isrspec_addr;
 } DEVSPEC;
-/*
-volatile typedef struct PIN_xref
-{
-    u8 Dpin;
-//    u8 dev_index;
-//    u8 PIN_xref_dev[ NUM_DIGITAL_PINS ];
-} PINXREF;
-*/
 const u8 PROGMEM as_many_ports_as_a_board_could_ever_have = 26;
-/*
-volatile typedef struct PORT_xref
-{
-    u8 PORT_xref[ as_many_ports_as_a_board_could_ever_have + 1 ];//Just remember when sparsing to adjust index one downward from original board port indexes so that PORTA if used would become index 0 even though the index for PORTA starts out as 1
-} PORTXREF;
-*/
-/*
-volatile typedef struct DEV_xref
-{
-    u8 DEV_xref[ NUM_DIGITAL_PINS ];
-} DEVXREF;
-*/
 
 volatile typedef struct ISR_xref
 {
@@ -100,7 +80,7 @@ volatile typedef struct ISR_xref
     volatile u8 ISR_xref[ number_of_ISRs ];
 } ISRXREF;
 
-//Need to develop a better overview understanding of the needed environment here:The is one of these per ISR with the purpose of holding needed items for fastest ISR lookup and use - ISR needs to read port's pin register and AND it on every transition with
+
 struct ISR_specific
 {
     volatile u8 sandbox_bytes[ 6 ];
@@ -127,32 +107,33 @@ struct ISR_specific
     volatile signed char offset = 0;
 };
 
-//There is one non-struct dynamic-sized array for each ISR, each element is a device-specific struct on one of the ISR's populated PCMSK bits
-/*
-volatile typedef struct pin_specific
-{
-    u8 Dpin;
-//    u8 duplicate_of_pin;
-    byte mask_in_port;
-    byte mask_by_PCMSK_in_ISR; //use these two fields to backwards-lookup
-    ISRSPEC* ISR_for_pin; //use these two fields to backwards-lookup//or make it the index rather than the address???
-    u8 portspec_index_for_pin;
-    u8 devspec_index_for_pin;//or make it the index rather than the address???
-//    DEVICE_PROTOCOL* device_protocol_for_pin;//dyn-sized array  //should this be here or in device-specific???????????????????
-//    Device_Timer* Timer_for_pin; //There may be multiple of these
-} PINSPEC;
+struct ISR_specific_minimalist_memory//FUTURE - The PC ISR will need to put a bit into sandbox element, will take longer and cause more jitter responding to sensor when more than one ISR needs servicing
+{//move the translating code into the PC ISRs if you need this feature.  DIY
+    volatile u8 sandbox_bytes[ 6 ];
+    volatile u8 index_in_PCMSK_of_current_device_within_ISR = 0;  //circular, from 0 to 7, default for no current device = 255
+    volatile u8 array_of_all_devspec_index_plus_1_this_ISR[ 8 ];
+    volatile DEVSPEC* current_device_devspec_structure;
+    volatile u8* active_pin_output_port_reg_addr;
+    volatile u8* active_pin_ddr_port_reg_addr;
+    volatile u8* active_pin_pin_reg_addr;//This pointer is the address of a portInputRegister of the PORT
+    volatile byte mask_by_port_of_current_device_being_actively_communicated_with_thisISR = 0;//will ever only have single bit set at any time to AND against the port's pin register contents, so each bit not guarranteed to have a unique target device.  Use in combo with active_pin_pin_reg_addr
+    volatile byte mask_by_PCMSK_of_current_device_within_ISR = 0;
+    volatile unsigned long* start_time_plus_max_acq_time_in_uSecs;//for DHT the max acq time is 4416 uSecs for 40 data bits.   Calculated from the max number of one bits is 25 of the 40 bits plus add 4 uSec for resolution err
+    volatile u8 next_bit_coming_from_dht = 0;//set to -1 (255) if acquisition complete? later
+    volatile unsigned long timestamp_of_last_falling_edge; //4 bytes  instead of a 4-byte timestamp for every transition
+    volatile byte mask_by_PCMSK_of_real_pins = 0;
+    volatile byte mask_by_PCMSK_of_valid_devices = 0; //used to know indexes within run-time-sized array of devices: this is to x-ref to devices array. also used to determine size of array of device characteristics
+    volatile u8* pcmsk;
+    volatile unsigned short millis_rest_length;
+    volatile u8 array_of_all_devprot_index_this_ISR[ 8 ];//This can only be determined ultimately from port in device discovery -> port mask -> 
+    volatile unsigned short* val_tmp1;// = ( unsigned short* )&this_Isrspec_address->sandbox_bytes[ 1 ];
+    volatile unsigned short* val_tmp2;// = ( unsigned short* )&this_Isrspec_address->sandbox_bytes[ 3 ];
+    volatile u8 pwroftwo;
+    volatile u8 interval = 2;
+    volatile signed char offset = 0;
+};
 
-volatile typedef struct registers_etc_this_dht_populated_pin_no_ISR
-{
-    PINSPEC* Dpin;
-} DHT_NO_ISR;
-*/
-volatile typedef struct ISR_pin_registers_xref_etc_unsparsed                                            // This is needed to provide which index the interrupt-generating pin is in the jam-packed non-sparse array (only pins with dht devices are members, zero-based, no holes)
-{                                                                                                       // One per dht-populated ISR
-    byte index_lookup_table[ 8 ];                                                                         // Requires minimum of 24 bits for 8 elements of minimum 3 bit size. Each element represents a pin from the PCMSK of this ISR, with same order as in PCMSK, naturally.
-} retrieve_registers_etc_this_dht_pin;                                                                      // Making each element a full byte enables array-style, simplest, fastest access but uses 5 more bytes data_seg memory.  All depends on how desparate we are for data_seg memory
-                                                                                                        // Populated as dht devices are discovered, malloc'd when a new ISR is found during that discovery
-//typedef void (* ptr_to_function_type) ();
+//There is one non-struct dynamic-sized array for each ISR, each element is a device-specific struct on one of the ISR's populated PCMSK bits
 
 volatile typedef struct D_Timer //piggy-backed to Timer0 match A.  Used for timing device rest period, MCU start bit, device died watchdog, scheduling functions, etc
 {//device rest period timers are in pin_spec
