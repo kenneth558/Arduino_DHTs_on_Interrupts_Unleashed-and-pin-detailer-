@@ -51,8 +51,6 @@ volatile typedef struct one_line_device_protocols_supported //Make array of thes
 //until we support other protocols, just DHT11 and DHT22 are allowed for because we won't know in all the ways that others can differ    
 } DEVICE_PROTOCOL;
 
-const PROGMEM u8 confidence_depth = 3;
-
 volatile typedef struct device_specific
 {//The array of these elements gets built in the device-detection function, which only knows the port, doesn't even know how many devices have been found from previous runs to know the index where to put the ones found
 //The indexes for this array need to be able to be reverse looked up from information in ISRSPEC, forward looked up from port masks
