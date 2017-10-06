@@ -806,7 +806,7 @@ DEVSPEC* Devspec;
     for ( u8 i = 0; i < number_of_ISRs; i++ )
     {
         Isrxref->ISR_xref[ i ] = i;
-        Isrxref->my_isrspec_addr[ i ] = &Isrspec[ i ];
+        Isrxref->my_isrspec_addr[ i ] = &Isrspec[ i ];//Will only work if and because Isrspec has not been sparsed, yet
     }
 //    for( u8 i = 0; i < sizeof( Pinxref->PIN_xref_dev ); i++ )
 //        Pinxref->PIN_xref_dev[ i ] = 255;//MOST OF THESE WILL GO TO WASTE
@@ -4188,9 +4188,12 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 Serial.print( F( "At location #" ) );
                 if( devspec_index < 10 ) Serial.print( F( " " ) );
                 Serial.print( devspec_index );
+                if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
                 Serial.print( F( " is pin D" ) );
                 Serial.print( this_Devspec_address->Dpin );
-                Serial.print( F( " (DHT" ) );
+                Serial.print( F( " " ) );
+                print_analog_if_exists( this_Devspec_address->Dpin );
+                Serial.print( F( "(DHT" ) );
                 if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
                 else Serial.print( F( "11" ) );
                 Serial.print( F( "): " ) );
@@ -4233,19 +4236,19 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
         }
         else if( atoi( receivedChars ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) )
         {
-    //        Serial.print("This just in ... ");
-    //        Serial.println( atoi( receivedChars ) );
-    //        Serial.print( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) );
-    //        Serial.print( F( " " ) );
             this_Devspec_address = &Devspec[ atoi( receivedChars ) ];
             tmp_sandbox;
             filled_vals = 0;
             ilvr = this_Devspec_address->index_of_next_valid_readings_sets;
             Serial.print( F( "At location #" ) );
+            if( atoi( receivedChars ) < 10 ) Serial.print( F( " " ) );
             Serial.print( atoi( receivedChars ) );
+            if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
             Serial.print( F( " is pin D" ) );
             Serial.print( this_Devspec_address->Dpin );
-            Serial.print( F( " (DHT" ) );
+            Serial.print( F( " " ) );
+            print_analog_if_exists( this_Devspec_address->Dpin );
+            Serial.print( F( "(DHT" ) );
             if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
             else Serial.print( F( "11" ) );
             Serial.print( F( "): " ) );
