@@ -59,4 +59,6 @@ Changes you could make so as not to run out of memory due to device count on boa
 
 Going back to the Leonardo with its differences in serial communications, I am unable to command it to list DHT readings for the time being.  It does support 7 DHT devices, possibly eight IF you want to remove (break) the RX LED and solder a connecting wire to the positive side of it...not likely anyone other than me would do that, so 7 devices it is.
 
+Relative to program memory space, many opportunities exist in this code to reduce memory code footprint.  With as much work as it has taken me to obtain functional success, reducing code footprint has not been high enough priority to pay much attention to it.
+
 UPDATE 10/02/2017:  I am going to wait on further coding on this project until I see some downloads or hear from you via the issues tab above.  Open a new issue to let me know of your interest.  Otherwise, I have other projects calling to me....
