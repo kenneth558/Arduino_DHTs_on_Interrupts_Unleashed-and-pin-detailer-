@@ -95,7 +95,7 @@ ISR( TIMER0_COMPA_vect )
     }
     this_Isrspec_address->offset = 0;
     while( true )
-    {//goes through offsets in case it would correct a small timing error
+    {
         if( this_Isrspec_address->interval < this_Isrspec_address->next_bit_coming_from_dht ) // Starting at bit = 2 must not be protocol-dependent since the values get over-written during the for loop
         {
             cli(); //atomic safety of next line, timestamps are multi-byte and asynchronously written to by the Pin Change ISRs
@@ -300,7 +300,7 @@ CONTINUE:;//goto AFTER_TRIGGER_NEXT_DEVICE;
 NEXT_ISRDEV:;
     }
 AFTER_TRIGGER_NEXT_DEVICE:;
-    ISR_index_in_isr = ( ISR_index_in_isr + 1 ) % number_of_ISRs;
+    ISR_index_in_isr = ( ISR_index_in_isr + 1 ) % number_of_populated_isrs;
 END:;
     unsigned long timemicros = micros() - ISRTIMER0_COMPA_vect_executiontime_micros;
     if( maxISRTIMER0_COMPA_vect_executiontime_micros < timemicros )
