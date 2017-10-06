@@ -4298,8 +4298,14 @@ for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_i
     DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
     if( this_Devspec_address->consecutive_read_failures )
     {
-        Serial.print( F( " D" ) );
+        Serial.print( F( "At location #" ) );
+        if( devspec_index < 10 ) Serial.print( F( " " ) );
+        Serial.print( devspec_index );
+        if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
+        Serial.print( F( " is pin D" ) );
         Serial.print( this_Devspec_address->Dpin );
+        Serial.print( F( " " ) );
+        print_analog_if_exists( this_Devspec_address->Dpin );
         Serial.print( F( " (DHT" ) );
         if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
         else Serial.print( F( "11" ) );
