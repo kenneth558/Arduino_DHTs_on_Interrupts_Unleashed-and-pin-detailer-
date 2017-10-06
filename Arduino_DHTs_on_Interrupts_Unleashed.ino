@@ -4298,6 +4298,7 @@ for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_i
     DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
     if( this_Devspec_address->consecutive_read_failures )
     {
+        Serial.print( F( " D" ) );
         Serial.print( this_Devspec_address->Dpin );
         Serial.print( F( " (DHT" ) );
         if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
