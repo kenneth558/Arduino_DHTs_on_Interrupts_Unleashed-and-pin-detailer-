@@ -4115,7 +4115,7 @@ if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 }
 Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
-Serial.print( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) );
+Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
 Serial.print( F( " with your entire" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
@@ -4126,7 +4126,7 @@ Serial.print( F( " values obtained.  Entering the index" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "that occur are displayed asynchronously by void loop() as they happen." ) );
+Serial.print( F( "greater than 3 consecutively are displayed asynchronously by void loop() as they happen." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.flush();
 }
@@ -4296,7 +4296,7 @@ showNewData();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=39645
 for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
 {
     DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
-    if( this_Devspec_address->consecutive_read_failures )
+    if( this_Devspec_address->consecutive_read_failures > 3 )
     {
         Serial.print( F( "At location #" ) );
         if( devspec_index < 10 ) Serial.print( F( " " ) );
