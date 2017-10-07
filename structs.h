@@ -63,7 +63,11 @@ volatile typedef struct device_specific
     volatile unsigned long device_busy_resting_this_more_millis;
     volatile unsigned long start_time_plus_max_acq_time_in_uSecs;//This will get null'd when data is done processing
     volatile u8 devprot_index;//to a Device Protocols array element
-    volatile u8 consecutive_read_failures;
+    volatile u8 consecutive_read_failures_mode0;
+    volatile u8 consecutive_read_failures_mode1;
+    volatile u8 consecutive_read_failures_mode2;
+    volatile u8 consecutive_read_failures_mode3;
+    volatile u8 consecutive_read_failures_mode4;
     volatile u8 consecutive_read_successes;
     volatile byte mask_in_port;
     volatile u8 Dpin;
