@@ -4126,7 +4126,9 @@ Serial.print( F( " values obtained.  Entering the index" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "greater than 3 consecutively are displayed asynchronously by void loop() as they happen." ) );
+Serial.print( F( "greater than 3 consecutively are displayed asynchronously by void loop() as" ) );
+Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.print( F( "they happen." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.flush();
 }
