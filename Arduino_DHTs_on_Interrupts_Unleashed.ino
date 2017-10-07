@@ -67,6 +67,7 @@ const PROGMEM unsigned long halftime = ( ( unsigned long ) -1 )>>1;
 const PROGMEM u8 allowed_number_consecutive_read_failures = 25;//JUST A GUESS, NOT EVEN EMPIRICS TO SUPPORT THIS
 const PROGMEM u8 consecutive_reads_to_verify_device_type = 20;
 const PROGMEM u8 best_uSec_time_translate = 100;
+const PROGMEM u8 alert_beyond_this_number_of_consecutive_errs = 5;
 u8 number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR = 0; //Needs to be calculated every time discovery of DHT devices function is executed
 static port_specific* ptr_to_portspecs_stack;
 static port_specific* previous_ptr_to_portspecs_stack = NULL;
@@ -112,11 +113,11 @@ const u8 millis_DHT_MCU_start_signal_bit[ ] = { 19, 2 };//consider the first one
 //To accommodate MCU start bit lengths less than 1 ms we may need to utilize the TIMER0_COMPB_vect and the associated OCR0B, TCCR0B...to be determined in a later revision of this sketch if wanted. Scheme would be to have OCR0B set to a value higher or lower than OCR0A and have the first ...vect flip the bit low and tell the other one to call the start the dht function forthwith
 //FUTURE - uSec values are simply the ones great than the first value in this array, so when the first value is 19, any later value 20 or greater indicates a uSec time length - NOT YET USED
 const struct one_line_device_protocols_supported DEV_PROT_DHT11 = {
-     millis_DHT_MCU_start_signal_bit[ 0 ], 5000, 5000, dht_max_transitions_for_valid_acquisition_stream //Note that the manufacturer recommends 5 second wait intervals between reads in a continuous reading environment such as this
+     millis_DHT_MCU_start_signal_bit[ 0 ], 10000, 5000, dht_max_transitions_for_valid_acquisition_stream //Note that the manufacturer recommends 5 second wait intervals between reads in a continuous reading environment such as this
 };
 
 const struct one_line_device_protocols_supported DEV_PROT_DHT22 = {
-    millis_DHT_MCU_start_signal_bit[ 0 ], 2000, 5000, dht_max_transitions_for_valid_acquisition_stream 
+    millis_DHT_MCU_start_signal_bit[ 0 ], 10000, 5000, dht_max_transitions_for_valid_acquisition_stream 
 };
 
 volatile DEVICE_PROTOCOL Devprot[ ] = { DEV_PROT_DHT11, DEV_PROT_DHT22 };// DHT11 first, DHT22 second.  Since it is by value, we can change values as more suitable params are determined via tests even though the original copies are consts
@@ -519,7 +520,8 @@ unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
         ( sizeof( ISRSPEC ) * number_of_ISRs ) + \
         ( sizeof( PORTSPEC ) * populated_port_count ) + \
         ( sizeof( DEVSPEC ) * number_of_devices_found ) + \
-         strlen( string_of_all_ports_that_are_populated );//string_of_all_ports_that_are_populated
+         strlen( string_of_all_ports_that_are_populated ) + \
+         1;//string_of_all_ports_that_are_populated
 
         free( ( void* )Isrxref );
     Isrxref = ( ISRXREF* )malloc( main_array_size_now );
@@ -708,14 +710,16 @@ DEVSPEC* Devspec;
     Devspec = ( DEVSPEC* )( ( long unsigned int )Portspec + ( sizeof( PORTSPEC ) * populated_port_count ) );
     ports_string_in_heap_array = ( char* )( ( long unsigned int )Devspec + ( sizeof( DEVSPEC ) * number_of_devices_found ) );
     strcpy( ports_string_in_heap_array, string_of_all_ports_that_are_populated );//This makes ports_string_in_heap_array not suitable for interrupt findings if any pins served by interrupts don't have devices on them!!!
-/* 
+    ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] = 255;//This now makes a two-byte marker: 0, 255 to help determine if heap gets overwritten by stack (ISRs and local vars)
+/* */
     Serial.begin( 57600 ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
     }
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-*/ /*
+/* */ 
+/*
     Serial.print( F( "Devxref = " ) );
     Serial.print( ( long unsigned int )Devxref );
     Serial.print( F( ", Devxref - Isrxref = " ) );
@@ -766,21 +770,23 @@ DEVSPEC* Devspec;
     Serial.print( sizeof( PINSPEC ) * NUM_DIGITAL_PINS );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 */
-/*
-    Serial.print( F( "ports_string_in_heap_array = " ) );
+/* 
+    Serial.print( F( "line 773 ports_string_in_heap_array = " ) );
     Serial.print( ports_string_in_heap_array );
-*/
+    Serial.print( F( "line 776 string_of_all_ports_that_are_populated = " ) );
+    Serial.print( string_of_all_ports_that_are_populated );
+ */
 /*
     Serial.print( F( ", ports_string_in_heap_array - Devspec = " ) );
     Serial.print( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec );
     Serial.print( F( " and should be " ) );
     Serial.print( sizeof( DEVSPEC ) * number_of_devices_found  );
 */
-/*
+/* 
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.flush();
     Serial.end();
-*/
+ */
 /*
  * 
  * Example for Isrxref:
@@ -849,7 +855,11 @@ delay( 5 );//This is to let all dht devices that got triggered to end their data
             Devspec[ i ].last_valid_data_bytes_from_dht_device[ ij ] = 0;
         Devspec[ i ].timestamp_of_pin_valid_data_millis = 0;
         Devspec[ i ].devprot_index = 0;
-        Devspec[ i ].consecutive_read_failures = 0;
+        Devspec[ i ].consecutive_read_failures_mode0 = 0;
+        Devspec[ i ].consecutive_read_failures_mode1 = 0;
+        Devspec[ i ].consecutive_read_failures_mode2 = 0;
+        Devspec[ i ].consecutive_read_failures_mode3 = 0;
+        Devspec[ i ].consecutive_read_failures_mode4 = 0;
         Devspec[ i ].consecutive_read_successes = 0;
         Devspec[ i ].start_time_plus_max_acq_time_in_uSecs = 0;
         long unsigned timenow = millis();//A single point of reference to prevent changing during the following
@@ -4126,7 +4136,9 @@ Serial.print( F( " values obtained.  Entering the index" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-Serial.print( F( "greater than 3 consecutively are displayed asynchronously by void loop() as" ) );
+Serial.print( F( "greater than " ) );
+Serial.print( alert_beyond_this_number_of_consecutive_errs );
+Serial.print( F( " consecutively are displayed asynchronously by void loop() as" ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 Serial.print( F( "they happen." ) );
 Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -4173,13 +4185,11 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
 {
     if( newData )
     {
-//        Serial.print( receivedChars );
-//        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
         DEVSPEC* this_Devspec_address;
         u8 tmp_sandbox;
         u8 filled_vals;
         u8 ilvr;
-        if( strstr( receivedChars, "a" ) || strstr( receivedChars, "A" ) )
+        if( ( receivedChars[ 0 ] == 'a' ) || ( receivedChars[ 0 ] == 'A' ) )
         {
             for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
             {
@@ -4236,6 +4246,10 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 Serial.flush();
             }
         }
+        else if( ( receivedChars[ 0 ] == 'd' ) || ( receivedChars[ 0 ] == 'D' ) )
+        {
+            ;
+        }
         else if( atoi( receivedChars ) < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) )
         {
             this_Devspec_address = &Devspec[ atoi( receivedChars ) ];
@@ -4256,6 +4270,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
             Serial.print( F( "): " ) );
             for( signed char ij = confidence_depth - 1; ij >= 0 ;ij-- )
             {
+                if( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( u8 )( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ] < 10 ) Serial.print( F( " " ) );
                 Serial.print( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( u8 )( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ] );
                 Serial.print( F( "." ) );
                 Serial.print( this_Devspec_address->last_valid_data_bytes_from_dht_device[ ( u8 )( 1 + ( ( sizeof( this_Devspec_address->last_valid_data_bytes_from_dht_device ) / confidence_depth ) * ( ( ij + ilvr ) % confidence_depth ) ) ) ] );
@@ -4279,12 +4294,17 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
             Serial.print( F( "age in seconds = " ) );
             if( ( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_valid_data_millis ) ) / 1000 ) < 10 ) Serial.print( F( " " ) );
             Serial.print( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_valid_data_millis ) ) / 1000 );
+            Serial.print( F( " " ) );
             if( ( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 ) < 10 ) Serial.print( F( " " ) );
             Serial.print( ( float )( ( unsigned long )( millis() - this_Devspec_address->timestamp_of_pin_last_attempted_device_read_millis ) ) / 1000 );
             Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
             Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
             Serial.print( F( "mS " ) );
             Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        }
+        else
+        {
+            ;//We could print out some stats
         }
         newData = false;
     }
@@ -4298,7 +4318,11 @@ showNewData();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=39645
 for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
 {
     DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
-    if( this_Devspec_address->consecutive_read_failures > 3 )
+    if( this_Devspec_address->consecutive_read_failures_mode0 >= alert_beyond_this_number_of_consecutive_errs \
+        || this_Devspec_address->consecutive_read_failures_mode1 >= alert_beyond_this_number_of_consecutive_errs \
+        || this_Devspec_address->consecutive_read_failures_mode2 >= alert_beyond_this_number_of_consecutive_errs \
+        || this_Devspec_address->consecutive_read_failures_mode3 >= alert_beyond_this_number_of_consecutive_errs \
+        || this_Devspec_address->consecutive_read_failures_mode4 >= alert_beyond_this_number_of_consecutive_errs )
     {
         Serial.print( F( "At location #" ) );
         if( devspec_index < 10 ) Serial.print( F( " " ) );
@@ -4312,9 +4336,22 @@ for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_i
         if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
         else Serial.print( F( "11" ) );
         Serial.print( F( ") failures " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures );
+        Serial.print( this_Devspec_address->consecutive_read_failures_mode0 );
+        Serial.print( F( " " ) );
+        Serial.print( this_Devspec_address->consecutive_read_failures_mode1 );
+        Serial.print( F( " " ) );
+        Serial.print( this_Devspec_address->consecutive_read_failures_mode2 );
+        Serial.print( F( " " ) );
+        Serial.print( this_Devspec_address->consecutive_read_failures_mode3 );
+        Serial.print( F( " " ) );
+        Serial.print( this_Devspec_address->consecutive_read_failures_mode4 );
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     }
+}
+if( ( strlen( ports_string_in_heap_array ) > 26 ) || ( ( u8 )ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] != 255 ) )
+{
+    Serial.print( F( "Heap overwrite failure " ) );
+    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 }
 Serial.flush();
 delay( 200 );//add 400 for loop execution time, gives us about 600 for loop interval time
