@@ -85,7 +85,7 @@ ISR( TIMER0_COMPA_vect )
 
     if( ( this_Isrspec_address->next_bit_coming_from_dht != dht_max_transitions_for_valid_acquisition_stream ) && ( micros() > this_Devspec_address->start_time_plus_max_acq_time_in_uSecs ) )
     {
-        ++this_Devspec_address->consecutive_read_failures;
+        ++this_Devspec_address->consecutive_read_failures_mode0;
 //        if( ++this_Devspec_address->consecutive_read_failures > allowed_number_consecutive_read_failures ) this_Isrspec_address->array_of_all_devspec_index_plus_1_this_ISR[ this_Isrspec_address->index_in_PCMSK_of_current_device_within_ISR ] = 0;//NOT USED without auto-retry
         PCICR &= ~Isrxref->ISR_xref[ ISR_index_in_isr ];//Done with acquisition cycle, turn off PC Iinterrupts for this ISR
         *this_Isrspec_address->active_pin_ddr_port_reg_addr |= this_Isrspec_address->mask_by_port_of_current_device_being_actively_communicated_with_thisISR;
@@ -122,8 +122,8 @@ ISR( TIMER0_COMPA_vect )
             else if( this_Isrspec_address->offset == 4 ) this_Isrspec_address->offset = -4;
             else
             {
+//ignore CRC errs                this_Devspec_address->consecutive_read_failures_mode1++;//array_of_all_devspec_index_plus_1_this_ISR
 ERRD_OUT:;
-                this_Devspec_address->consecutive_read_failures++;//array_of_all_devspec_index_plus_1_this_ISR
                 if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type ) this_Devspec_address->consecutive_read_successes = 0;
                 this_Isrspec_address->interval = 2;
                 goto DONE_WITH_READ;
@@ -134,7 +134,7 @@ ERRD_OUT:;
     }
     if( !this_Isrspec_address->sandbox_bytes[ 0 ] && !this_Isrspec_address->sandbox_bytes[ 1 ] && !this_Isrspec_address->sandbox_bytes[ 2 ] && !this_Isrspec_address->sandbox_bytes[ 3 ] && !this_Isrspec_address->sandbox_bytes[ 4 ] )
     {//This condition happens when the device did not have enough rest.  Double the device_busy_resting_this_more_millis time for this Devspec. If only the rest time was the problem the consecutive_read_failures will not accumulate
-        this_Devspec_address->consecutive_read_failures++;
+        this_Devspec_address->consecutive_read_failures_mode2++;
         if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type ) this_Devspec_address->consecutive_read_successes = 0;
         this_Devspec_address->device_busy_resting_this_more_millis += Devprot[ this_Devspec_address->devprot_index ].millis_rest_length;
         if( Devprot[ this_Devspec_address->devprot_index ].millis_rest_length < 5000 ) Devprot[ this_Devspec_address->devprot_index ].millis_rest_length += 3000;
@@ -168,6 +168,7 @@ STAGE_3:;
         {//ALL FAILED
             if( this_Devspec_address->consecutive_read_successes != consecutive_reads_to_verify_device_type )
                 this_Devspec_address->devprot_index = 0;
+                this_Devspec_address->consecutive_read_failures_mode3++;//array_of_all_devspec_index_plus_1_this_ISR
             goto ERRD_OUT;// or?
             goto DONE_WITH_READ;
         }
@@ -175,6 +176,7 @@ STAGE_3:;
     }
     else
     {
+            this_Devspec_address->consecutive_read_failures_mode4++;//array_of_all_devspec_index_plus_1_this_ISR
             goto ERRD_OUT;// or?
             goto DONE_WITH_READ;
     }
@@ -217,8 +219,8 @@ STAGE_3:;
 //    }
 //    else
 //    {
-    if( this_Devspec_address->consecutive_read_failures )
-        this_Devspec_address->consecutive_read_successes = this_Devspec_address->consecutive_read_failures = 0;//Single byte so no atomic concerns
+    if( this_Devspec_address->consecutive_read_failures_mode0 || this_Devspec_address->consecutive_read_failures_mode1 || this_Devspec_address->consecutive_read_failures_mode2 || this_Devspec_address->consecutive_read_failures_mode3 || this_Devspec_address->consecutive_read_failures_mode4 )
+        this_Devspec_address->consecutive_read_successes = this_Devspec_address->consecutive_read_failures_mode0 = this_Devspec_address->consecutive_read_failures_mode1 = this_Devspec_address->consecutive_read_failures_mode2 = this_Devspec_address->consecutive_read_failures_mode3 = this_Devspec_address->consecutive_read_failures_mode4 = 0;//Single byte so no atomic concerns
     else if( this_Devspec_address->consecutive_read_successes == consecutive_reads_to_verify_device_type )
     {;
     }
