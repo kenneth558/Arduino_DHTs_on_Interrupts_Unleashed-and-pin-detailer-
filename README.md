@@ -1,7 +1,7 @@
       Arduino DHTs on Interrupts Unleashed          (previously named Arduino_DHTs_on_Interrupt_steroids)
 
 
-I DO NOT YET HAVE THIS SKETCH FUNCTIONING ON THE LEONARDO
+I DO NOT YET HAVE THIS SKETCH FUNCTIONING ON THE LEONARDO.  I would suspect something different on that board with the Serial class not being compatible with interrupts as I use them.
 
 
 Files you need to place in your sketch directory:
