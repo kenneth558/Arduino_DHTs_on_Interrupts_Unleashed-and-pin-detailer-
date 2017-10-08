@@ -1,25 +1,3 @@
-//structure description:
-//each ISRSPEC has a structure specifying:
-// - timestamp micros of last portwide device detection action by this port
-// - pin mask of current device being actively communicated with on this port
-// - high-going micros timestamp and error flag: starts at 0, becomes timestamp for latest rising edge (make 0 and 1=2), holds 1 if bit overrun error, remains 0 if no rising edge
-// - low-going time interval micros since high-going for each bit of the current/latest data bit stream acquisition. Don't fill if no high-going timestamp
-// - next bit in line in the current/latest data bit stream acquisition
-// - const mask of safe to test pins 
-// - mask of eligible device pins
-// - need to read the associated PIN register and determine what has changed since the last interrupt IF needing to differentiate which pin caused interrupt OR needing to know voltage level of pin
-//  address of PCMSK for that ISR 
-//  address of device protocol struct in effect
-// Intent is to save time by using the pin-to-port/mask/bit/etc functions ahead of time but still try to use small data_seg footprint
-/*
-The ISR needs to look up the port and pin mask of the pin that caused interrupt because not all boards are like the UNO having ISR serviced pins all on a single mask of a single port.
-
-How this is used: A PICINT ISR is triggered by a pin change. The ISR code reads its own hardcoded PCMSK which has the interrupting pin's bit set in the octet.  The only way then to know the right pin after that is to get its port and bitmask from lookup array.
-The possibly-sparse PCMSK can only correlate to the non-sparse index by this xref/lookup table that is freed/[re]built in the dht devices detected function
-
-
-*/
-
 volatile typedef struct port_specific
 {
     u8* this_port_main_reg;
