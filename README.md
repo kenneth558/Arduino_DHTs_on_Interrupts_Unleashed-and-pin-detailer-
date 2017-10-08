@@ -1,5 +1,9 @@
       Arduino DHTs on Interrupts Unleashed          (previously named Arduino_DHTs_on_Interrupt_steroids)
 
+
+I DO NOT YET HAVE THIS SKETCH FUNCTIONING ON THE LEONARDO
+
+
 Files you need to place in your sketch directory:
 
 Arduino_DHTs_on_Interrupts_Unleashed.ino   
