@@ -10,7 +10,7 @@ misc_maskportitems.h
 
 structs.h
 
-** External 5VDC power supply for your sensors may be required: Save yourself some frustration and use one while getting your system stable, THEN try without it.  Otherwise you'll not really know if the lack of an external power supply is the cause of instabilites that may occur**
+** External 5VDC power supply for your sensors may be required: Save yourself some frustration and use one while getting your system stable, THEN try without it.  Otherwise you'll not really know if the lack of an external power supply is the cause of instabilites that may occur.  The way I supply the extra supply voltage is from spare Arduinos - each Arduino powers 2 or 3 sensors, maybe more if you want to experiment.**
 
 **NOTE WINDOWS USERS: If the host computer is MS Windows, it requires a CR line ending besides the LF that Linux requires.  This sketch contains a programmed feature to accommodate MS Windows line endings: if you install a high-value resistor (like 1 Mohm) between pins A0 and LED_BUILTIN the output will insert the CR that MS Windows needs into line endings.  On the UNO these pins are labeled A0 and 13.  Refer to the pin detail printout when this sketch first starts if you need that info for other boards. **
 
