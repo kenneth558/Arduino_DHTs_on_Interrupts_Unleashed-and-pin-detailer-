@@ -12,7 +12,7 @@ structs.h
 
 ** External 5VDC power supply for your sensors may be required: Save yourself some frustration and use one while getting your system stable, THEN try without it.  Otherwise you'll not really know if the lack of an external power supply is the cause of instabilites that may occur**
 
-**NOTE WINDOWS USERS: If the host computer is MS Windows, it requires a CR line ending besides the LF that Linux requires.  This sketch contains a prorammed feature to accommodate MS Windows line endings if you install a high-value resistor (like 1 Mohm) between pins A0 and LED_BUILTIN.  On the UNO these pins are labeled A0 and 13.  Refer to the pin detail printout when this sketch first starts if you need that info for other boards. **
+**NOTE WINDOWS USERS: If the host computer is MS Windows, it requires a CR line ending besides the LF that Linux requires.  This sketch contains a programmed feature to accommodate MS Windows line endings: if you install a high-value resistor (like 1 Mohm) between pins A0 and LED_BUILTIN the output will incorporate the insert the CR into line endings.  On the UNO these pins are labeled A0 and 13.  Refer to the pin detail printout when this sketch first starts if you need that info for other boards. **
 
 I DO NOT YET HAVE THIS SKETCH FUNCTIONING ON THE LEONARDO.  I suspect my ISR cycling logic causes problems where there is only a single ISR.
 
