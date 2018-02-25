@@ -1,7 +1,7 @@
 /*                      So, what does this sketch do?  
  *  This sketch obtains accurate and thorough PCINT data by toggling every digital pin.  Circuit faults that prevent pins from toggling their 
  *  voltage levels will prevent accurate assessment by this sketch, if such pins are served by the PCINT infrastructure.  Original header files are 
- *  still referred to for port mask data, however. 
+ *  still referred to for port mask data, however. Boards tested with: UNO Nano Leonardo Mega2560 WeMo XI/TTGO XI (8F328P-U)
 
  */
 
