@@ -21,10 +21,10 @@ If the line above causes a compile-time error, there are two possible reasons li
 
 // You as end-user can specify in next line the pins that you want protected from the signals placed on ISR( PCINT_vect )-capable pins during the DHT discovery process.  These pins will not be mucked with, but nor will they then support an ISR( PCINTn_vect )-serviced DHT device.
 const u8 pins_NOT_safe_even_to_make_low_Z_during_testing[ ] = { };
-#if defined (SERIAL_PORT_HARDWARE) && defined (LED_BUILTIN)
+#if defined (SERIAL_PORT_HARDWARE) && defined ( LED_BUILTIN )
     const u8 pins_NOT_safe_to_toggle_during_testing[ ] = { SERIAL_PORT_HARDWARE, LED_BUILTIN };
 #else
-    #ifdef (LED_BUILTIN)
+    #ifdef LED_BUILTIN
         const PROGMEM u8 pins_NOT_safe_to_toggle_during_testing[ ] = { LED_BUILTIN };
     #else
         const PROGMEM u8 pins_NOT_safe_to_toggle_during_testing[ ] = { };
