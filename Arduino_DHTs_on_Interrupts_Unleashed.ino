@@ -1578,11 +1578,11 @@ EndOfThisPin:;
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
+    Serial.print( F( "<-Ignore any extraneous characters here)" ) );
     bool any_wrong_digitalPinToPCICRbit_reports = false;
     bool any_wrong_digitalPinToPCMSKbit_reports = false;
     for ( u8 j = 0; j < number_of_ISRs; j++ )
     {
-        Serial.print( F( "Ignore any extraneous characters here)" ) );
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
         Serial.print( F( "For this ISR ( ISR" ) );
@@ -2020,6 +2020,7 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR = 0;    //This tells reset_ISR_findings_and_reprobe() that we need this variable re-valued to know how large the ports_with_DHT_devices... array must be initialized for
     reset_ISR_findings_and_reprobe ( false ); //uses number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR to build ptr_to_portspecs_stack
     TIMSK0 |= 2;  //enables the compare value for match A , = 1 go back to normal.  First run through
+/*
 Serial.flush();
 Serial.end();
 Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
@@ -2027,7 +2028,7 @@ Serial.setTimeout( 10 ); //
 while ( !Serial );
 Serial.flush();
 Serial.end();
-
+*/
 Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
 Serial.setTimeout( 10 ); //
 while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -2035,7 +2036,6 @@ if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )
 {
     Serial.print( F( "No DHT devices were detected, so the following statements are null and void:" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.flush();
 }
 Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
 Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
