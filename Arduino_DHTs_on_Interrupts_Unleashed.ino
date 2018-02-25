@@ -27,7 +27,10 @@ If the line above causes a compile-time error, there are two possible reasons li
 #ifndef u16
     #define u16 uint16_t
 #endif
-#ifdef __LGT8FX8E__
+#ifndef __LGT8FX8E__
+    short unsigned _baud_rate_ = 57600;//Very much dependent upon the capability of the host computer to process talkback data, not just baud rate of its interface
+#else
+    short unsigned _baud_rate_ = 19200;//In production environment the XI tends to power up at baud 19200 so we can't risk setting baud to anything but that
     #define LED_BUILTIN 12
 #endif
 
@@ -134,7 +137,7 @@ void prep_ports_for_detection()
     if ( !pre_array_boards_ports_string )
     {
 /* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ) { 
           ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -185,7 +188,7 @@ bool build_from_nothing()
     if ( F_CPU != 16000000 )
     { //In here we change the two checktimes for other clock rates TODO
 /* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ) { 
           ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -201,7 +204,7 @@ bool build_from_nothing()
     if( !( bool )number_of_ISRs )
     { //In here we change the two checktimes for other clock rates TODO
 /* */
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ) { 
           ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -284,7 +287,7 @@ unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
     Isrxref = ( ISRXREF* )malloc( main_array_size_now );
     if( !Isrxref )
     { //Come up with a better way to handle this
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ) { 
           ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -376,7 +379,7 @@ delay( 2000 );//ensure all devices get a rest period right here
     }
     for( u8 i = 0; i < sizeof( Portxref->PORT_xref ); i++ )
         Portxref->PORT_xref[ i ] = i;
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -485,7 +488,7 @@ delay( 2000 );//ensure all devices get a rest period right here
             time_this_port_tested_millis[ port_placement ] = millis();//don't yet know the particular rest period each device needs, but we are working towards guaranteeing them their rest after this exhausting acquisition
         }
     }
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -676,7 +679,7 @@ void print_analog_if_exists( u8 pin )
 
 void mem_frag_alert()
 { 
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -696,7 +699,7 @@ void mem_frag_alert()
 
 void mem_defrag_alert()
 { 
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -1567,7 +1570,7 @@ EndOfThisPin:;
         }
     }
     digitalWrite( LED_BUILTIN, LOW ); //Telling any supporting circuitry ( if end-user added any ) that ISR discovery is done, so pins can now be connected on through to the field
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
@@ -1926,7 +1929,7 @@ EndOfThisPin:;
 
 void setup() {
 #ifndef OCR0A
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -1941,7 +1944,7 @@ void setup() {
 #endif
     if( ( ( TIMSK0 & 2 ) || TCCR0A != 3 ) && OCR0A != 0xA1 )
     {
-        Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+        Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -1958,7 +1961,7 @@ void setup() {
 OCR0A = 0xA1; //To enable the 1 mSec off-phase ( compare ) interrupt
 TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like this before expecting full first cycle
 #endif
-    Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -2014,13 +2017,13 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     TIMSK0 |= 2;  //enables the compare value for match A , = 1 go back to normal.  First run through
 Serial.flush();
 Serial.end();
-Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
 Serial.setTimeout( 10 ); //
 while ( !Serial );
 Serial.flush();
 Serial.end();
 
-Serial.begin( 57600 ); //This speed is very dependent on the host's ability
+Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
 Serial.setTimeout( 10 ); //
 while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
 if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
