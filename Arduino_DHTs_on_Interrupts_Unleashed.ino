@@ -2256,6 +2256,7 @@ if( ( strlen( ports_string_in_heap_array ) > 26 ) || ( ( u8 )ports_string_in_hea
 {
     Serial.print( F( "Heap overwrite failure " ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    delay( 30000 );
 }
 Serial.flush();
 delay( 200 );//add 400 for loop execution time, gives us about 600 for loop interval time
