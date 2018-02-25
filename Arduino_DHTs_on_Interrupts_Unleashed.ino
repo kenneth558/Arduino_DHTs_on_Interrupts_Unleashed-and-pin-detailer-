@@ -4,6 +4,8 @@
  *  still referred to for port mask data, however. 
 
  */
+
+
 #ifndef NOT_AN_INTERRUPT //This macro was introduced on Oct 1, 2013, IDE version 1.5.5-r2
 Did you use your system package manager to install an obsolete Arduino IDE rather than downloading the current IDE directly from arduino.cc?
 /*
@@ -17,6 +19,15 @@ If the line above causes a compile-time error, there are two possible reasons li
  2 )  Your board truly does not have features to necessitate this by design, or you are compiling in a mixed-technology environment.
      If above reason #2 is the case, simply edit this sketch ( comment out or remove the invalid instruction line/section ), then save and recompile it to get rid of the compile-time error.  With your board, you forfeit the ability to use resistors for mildly helpful boot-up options.  Not a big deal at all.
 */
+#endif
+#ifndef u8
+    #define u8 uint8_t
+#endif
+#ifndef u16
+    #define u16 uint16_t
+#endif
+#ifdef __LGT8FX8E__
+    #define LED_BUILTIN 12
 #endif
 
 // You as end-user can specify in next line the pins that you want protected from the signals placed on ISR( PCINT_vect )-capable pins during the DHT discovery process.  These pins will not be mucked with, but nor will they then support an ISR( PCINTn_vect )-serviced DHT device.
@@ -669,9 +680,14 @@ void mem_frag_alert()
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
     }
+
+#ifndef __LGT8FX8E__
     Serial.print( F( "Alert: Possible memory fragmentation as evidenced by internal acquisition of a memory block in a higher address of heap memory while changing the size of an internal array." ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "Memory fragmentation is NOT a fault condition - it is simply non-ideal due to its long term effects, and the developers of this product have gone to lengths to prevent it from happening on their account.  Accruing memory fragmentation long term usually eventually leads to unpredictable/degraded/unstable/locked operation.  Advisable action if this is a mission-critical application and this message appears periodically: reboot this device at your very next opportunity" ) );
+#else
+    Serial.print( F( "Possible memory fragmentation" ) );
+#endif
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.flush();
     Serial.end();
@@ -684,7 +700,11 @@ void mem_defrag_alert()
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
     }
+#ifndef __LGT8FX8E__
     Serial.print( F( "Improved memory efficiency just occurred as evidenced by internal acquisition of a memory block in a lower address of heap memory while changing the size of an internal array.  Fragmentation has decreased." ) );
+#else
+    Serial.print( F( "Fragmentation improved." ) );
+#endif
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.flush();
     Serial.end();
@@ -1942,6 +1962,7 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+#ifndef __LGT8FX8E__
     Serial.print( F( "Arduino DHTs on Interrupts Unleashed Sketch" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -1980,6 +2001,7 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "protecting arrays if you'll be using pins for serial communications." ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+#endif
     Serial.flush();
     Serial.end();
     unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
