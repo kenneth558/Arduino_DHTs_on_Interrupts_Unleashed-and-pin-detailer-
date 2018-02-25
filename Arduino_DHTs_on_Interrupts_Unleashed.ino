@@ -939,7 +939,12 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
             }
         }
     }
-    
+    Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability //This speed is very dependent on the host's ability
+    Serial.setTimeout( 10 ); //
+    while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
+    Serial.print( F( "(" ) );//This encloses characters sent to tty during test
+    Serial.flush();
+    Serial.end();
     byte pmask;
     u8 port_indexes_ddrmasks_and_pinlevels[ number_of_ports_found ][ 1 ][ 1 ][ 1 ]; //Not yet ready, go through all pins first and get number of ports that way
 //Get ready to trip interrupts and determine which ports ( and how many for array creation ) have any PCINT lines whatsoever
@@ -1125,6 +1130,7 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
     & ( byte )digitalPinToBitMask( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
     pinstate[ f ] = ( bool )( digitalRead( pins_NOT_safe_to_toggle_during_testing[ f ] ) );
     }
+
     for ( u8 pin = 0; pin < NUM_DIGITAL_PINS; pin++ )
     {
         if ( !pin_NOT_safe_even_to_make_low_Z_during_testing( pin ) ) //should only check for membership in pins_NOT_safe_even_to_make_low_Z_during_testing
@@ -1528,7 +1534,6 @@ intcatchdone:;
         } //End of mask bit step for-loop  EDITOR IS WRONG ABOUT SHOWING THIS B/C IT DOESN'T KNOW OUTCOME OF IFDEFs
         
 
-
 EndOfThisPin:;
     } //Here is end of do-every-pin loop.  EDITOR IS WRONG ABOUT SHOWING THIS B/C IT DOESN'T KNOW OUTCOME OF IFDEFs    ONLY HERE CAN WE KNOW HOW MANY PORTS SUPPLYING ISRs THERE ARE - number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR
 
@@ -1572,13 +1577,13 @@ EndOfThisPin:;
     digitalWrite( LED_BUILTIN, LOW ); //Telling any supporting circuitry ( if end-user added any ) that ISR discovery is done, so pins can now be connected on through to the field
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
-    while ( !Serial ) { 
-      ; // wait for serial port to connect. Needed for Leonardo's native USB
-    }
+    while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
     bool any_wrong_digitalPinToPCICRbit_reports = false;
     bool any_wrong_digitalPinToPCMSKbit_reports = false;
     for ( u8 j = 0; j < number_of_ISRs; j++ )
     {
+        Serial.print( F( "Ignore any extraneous characters here)" ) );
+        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
         Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
         Serial.print( F( "For this ISR ( ISR" ) );
         Serial.print( j );
@@ -1964,9 +1969,9 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
 #ifndef __LGT8FX8E__
+    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( F( "Arduino DHTs on Interrupts Unleashed Sketch" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
@@ -2030,6 +2035,7 @@ if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )
 {
     Serial.print( F( "No DHT devices were detected, so the following statements are null and void:" ) );
     Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.flush();
 }
 Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
 Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
@@ -2219,48 +2225,48 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
 
 void loop() 
 {
-Serial.flush();
-recvWithStartEndMarkers();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=396450
-showNewData();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=396450
-for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
-{
-    DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
-    if( this_Devspec_address->consecutive_read_failures_mode0 >= alert_beyond_this_number_of_consecutive_errs \
-        || this_Devspec_address->consecutive_read_failures_mode1 >= alert_beyond_this_number_of_consecutive_errs \
-        || this_Devspec_address->consecutive_read_failures_mode2 >= alert_beyond_this_number_of_consecutive_errs \
-        || this_Devspec_address->consecutive_read_failures_mode3 >= alert_beyond_this_number_of_consecutive_errs \
-        || this_Devspec_address->consecutive_read_failures_mode4 >= alert_beyond_this_number_of_consecutive_errs )
+    Serial.flush();
+    recvWithStartEndMarkers();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=396450
+    showNewData();//COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=396450
+    for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
     {
-        Serial.print( F( "At location #" ) );
-        if( devspec_index < 10 ) Serial.print( F( " " ) );
-        Serial.print( devspec_index );
-        if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
-        Serial.print( F( " is pin D" ) );
-        Serial.print( this_Devspec_address->Dpin );
-        Serial.print( F( " " ) );
-        print_analog_if_exists( this_Devspec_address->Dpin );
-        Serial.print( F( " (DHT" ) );
-        if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
-        else Serial.print( F( "11" ) );
-        Serial.print( F( ") failures " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures_mode0 );
-        Serial.print( F( " " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures_mode1 );
-        Serial.print( F( " " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures_mode2 );
-        Serial.print( F( " " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures_mode3 );
-        Serial.print( F( " " ) );
-        Serial.print( this_Devspec_address->consecutive_read_failures_mode4 );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        DEVSPEC* this_Devspec_address = &Devspec[ devspec_index ];
+        if( this_Devspec_address->consecutive_read_failures_mode0 >= alert_beyond_this_number_of_consecutive_errs \
+            || this_Devspec_address->consecutive_read_failures_mode1 >= alert_beyond_this_number_of_consecutive_errs \
+            || this_Devspec_address->consecutive_read_failures_mode2 >= alert_beyond_this_number_of_consecutive_errs \
+            || this_Devspec_address->consecutive_read_failures_mode3 >= alert_beyond_this_number_of_consecutive_errs \
+            || this_Devspec_address->consecutive_read_failures_mode4 >= alert_beyond_this_number_of_consecutive_errs )
+        {
+            Serial.print( F( "At location #" ) );
+            if( devspec_index < 10 ) Serial.print( F( " " ) );
+            Serial.print( devspec_index );
+            if( this_Devspec_address->Dpin < 10 ) Serial.print( F( " " ) );
+            Serial.print( F( " is pin D" ) );
+            Serial.print( this_Devspec_address->Dpin );
+            Serial.print( F( " " ) );
+            print_analog_if_exists( this_Devspec_address->Dpin );
+            Serial.print( F( " (DHT" ) );
+            if( this_Devspec_address->devprot_index ) Serial.print( F( "22" ) );
+            else Serial.print( F( "11" ) );
+            Serial.print( F( ") failures " ) );
+            Serial.print( this_Devspec_address->consecutive_read_failures_mode0 );
+            Serial.print( F( " " ) );
+            Serial.print( this_Devspec_address->consecutive_read_failures_mode1 );
+            Serial.print( F( " " ) );
+            Serial.print( this_Devspec_address->consecutive_read_failures_mode2 );
+            Serial.print( F( " " ) );
+            Serial.print( this_Devspec_address->consecutive_read_failures_mode3 );
+            Serial.print( F( " " ) );
+            Serial.print( this_Devspec_address->consecutive_read_failures_mode4 );
+            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        }
     }
-}
-if( ( strlen( ports_string_in_heap_array ) > 26 ) || ( ( u8 )ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] != 255 ) )
-{
-    Serial.print( F( "Heap overwrite failure " ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    delay( 30000 );
-}
-Serial.flush();
-delay( 200 );//add 400 for loop execution time, gives us about 600 for loop interval time
+    if( ( strlen( ports_string_in_heap_array ) > 26 ) || ( ( u8 )ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] != 255 ) )
+    {
+        Serial.print( F( "Heap overwrite failure " ) );
+        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        delay( 30000 );
+    }
+    Serial.flush();
+    delay( 200 );//add 400 for loop execution time, gives us about 600 for loop interval time
 }
