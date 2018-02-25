@@ -2,7 +2,8 @@
  *  This sketch obtains accurate and thorough PCINT data by toggling every digital pin.  Circuit faults that prevent pins from toggling their 
  *  voltage levels will prevent accurate assessment by this sketch, if such pins are served by the PCINT infrastructure.  Original header files are 
  *  still referred to for port mask data, however. Boards tested with: UNO Nano Leonardo Mega2560 WeMo XI/TTGO XI (8F328P-U)
-
+Note that with the WeMo XI/TTGO XI board you'll get useful info if you'll just forgive the ending run-on about Heap overwrite...
+Thank you
  */
 
 
