@@ -1444,7 +1444,6 @@ bool reset_ISR_findings_and_reprobe ( bool protect_protected_pins )
                         Isrspec[ 3 ].mask_by_PCMSK_of_current_device_within_ISR = PCMSK3;
                     }
                 }
-                Isrspec[ 3 ].pin_numbers_in_PCMSK[ indexwisePCMSK3 ] = pin + 1;
                 if ( PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK3 ][ 3 ] == NULL )  PCINT_pins_by_PCMSK_and_ISR[ 0 ][ indexwisePCMSK3 ][ 3 ] = pin + 1;
                 else PCINT_pins_by_PCMSK_and_ISR[ 1 ][ indexwisePCMSK3 ][ 3 ] = pin + 1;
             }
