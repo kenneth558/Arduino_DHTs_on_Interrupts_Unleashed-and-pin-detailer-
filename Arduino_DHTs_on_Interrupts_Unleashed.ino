@@ -32,6 +32,7 @@ If the line above causes a compile-time error, there are two possible reasons li
 #else
     short unsigned _baud_rate_ = 19200;//In production environment the XI tends to power up at baud 19200 so we can't risk setting baud to anything but that
     #define LED_BUILTIN 12
+    #define NUM_DIGITAL_PINS 13
 #endif
 
 // You as end-user can specify in next line the pins that you want protected from the signals placed on ISR( PCINT_vect )-capable pins during the DHT discovery process.  These pins will not be mucked with, but nor will they then support an ISR( PCINTn_vect )-serviced DHT device.
