@@ -1675,6 +1675,9 @@ EndOfThisPin:;
             Serial.println(); 
         }
     }
+#ifdef PCMSK4
+    Serial.println( F( "At least one other ISR is available" ) );
+#endif
     Serial.println(); 
     Serial.print( F( "Summary of ISR-to-pin information:" ) );
     Serial.println(); 
@@ -1698,7 +1701,7 @@ EndOfThisPin:;
 #endif
 
     for ( u8 i = 0; i < 8; i++ )                                                                                         // i is PCMSK bit
-    { 
+    {
         Serial.println(); 
         Serial.print( i );
         Serial.print( F( ": " ) );
@@ -1948,6 +1951,9 @@ EndOfThisPin:;
         Serial.print( F( "* = digitalPinToPCMSKbit() function reports the wrong PCMSK bit for this pin.  This software product will work around it; other software will likely not correct the report error" ) );
         Serial.println(); 
     }
+#ifdef PCMSK4
+    Serial.println( F( "Also note that at least one other ISR is available.  Modify this sketch to expand to explore it" ) );
+#endif
     Serial.println(); 
     Serial.flush();
     Serial.end();
