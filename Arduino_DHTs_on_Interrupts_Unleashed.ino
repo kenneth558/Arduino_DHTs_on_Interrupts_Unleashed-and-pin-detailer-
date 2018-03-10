@@ -6,7 +6,6 @@ Note that with the WeMo XI/TTGO XI board you'll get useful info if you'll just f
 Thank you
  */
 
-
 #ifndef NOT_AN_INTERRUPT //This macro was introduced on Oct 1, 2013, IDE version 1.5.5-r2
 Did you use your system package manager to install an obsolete Arduino IDE rather than downloading the current IDE directly from arduino.cc?
 /*
@@ -32,12 +31,36 @@ If the line above causes a compile-time error, there are two possible reasons li
 #else
     short unsigned _baud_rate_ = 19200;//In production environment the XI tends to power up at baud 19200 so we can't risk setting baud to anything but that
     #define LED_BUILTIN 12
-    #define NUM_DIGITAL_PINS 13
 #endif
-
+#if defined ( NUM_ANALOG_INPUTS ) && not defined ( PIN_A0 )
+//if compiler errors here, you have a board the does not define its analog pins per de facto standards
+//Just comment out ONLY the lines that cause compiler to error, leaving the lines prior to those intact
+//Then save the modified file and re-compile
+    #define PIN_A0 A0
+    #define PIN_A1 A1
+    #define PIN_A2 A2
+    #define PIN_A3 A3
+    #define PIN_A4 A4
+    #define PIN_A5 A5
+    #define PIN_A6 A6
+    #define PIN_A7 A7
+    #define PIN_A8 A8
+    #define PIN_A9 A9
+    #define PIN_A10 A10
+    #define PIN_A11 A11
+    #define PIN_A12 A12
+    #define PIN_A13 A13
+    #define PIN_A14 A14
+    #define PIN_A15 A15
+    #define PIN_A16 A16
+    #define PIN_A17 A17
+    #define PIN_A18 A18
+    #define PIN_A19 A19
+    #define PIN_A20 A20
+#endif
 // You as end-user can specify in next line the pins that you want protected from the signals placed on ISR( PCINT_vect )-capable pins during the DHT discovery process.  These pins will not be mucked with, but nor will they then support an ISR( PCINTn_vect )-serviced DHT device.
 const u8 pins_NOT_safe_even_to_make_low_Z_during_testing[ ] = { };
-#if defined (SERIAL_PORT_HARDWARE) && defined ( LED_BUILTIN )
+#if defined ( SERIAL_PORT_HARDWARE ) && defined ( LED_BUILTIN )
     const u8 pins_NOT_safe_to_toggle_during_testing[ ] = { SERIAL_PORT_HARDWARE, LED_BUILTIN };
 #else
     #ifdef LED_BUILTIN
@@ -59,7 +82,7 @@ ISRSPEC* Isrspec;
 PORTSPEC* Portspec;
 DEVSPEC* Devspec;
 
-bool mswindows = false;  //Used for line-end on serial outputs.  Will be determined true during run time if a 1 Megohm ( value not at all critical as long as it is large enough ohms to not affect operation otherwise ) resistor is connected from pin LED_BUILTIN to PIN_A0
+//bool mswindows = false;  //Used for line-end on serial outputs.  Will be determined true during run time if a 1 Megohm ( value not at all critical as long as it is large enough ohms to not affect operation otherwise ) resistor is connected from pin LED_BUILTIN to PIN_A0
 u8 number_of_ports_found = 0; //Doesn't ever need to be calculated a second time, so make global and calculate in setup
 u8 number_of_devices_found = 0;
 u8 number_of_populated_isrs = 0;
@@ -145,7 +168,7 @@ void prep_ports_for_detection()
         }
 /* */
         Serial.print( F( "Not able to acquire enough heap memory to properly prepare any DHT device to respond in detection process." ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.flush();
         Serial.end();
 /* */   delay( 10000 );
@@ -196,7 +219,7 @@ bool build_from_nothing()
         }
 /* */
         Serial.print( F( "Not working with an expected clock rate, so DHT devices will not be detected." ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.flush();
         Serial.end();
 /* */   delay( 10000 );
@@ -212,7 +235,7 @@ bool build_from_nothing()
         }
 /* */
         Serial.print( F( "No ISR was found in this microcontroller board, so this product won't perform optimally.  Your very next step should be to check if any PCMSK variables are used with this board, or check connections and reboot if this message might reflect some fault condition..." ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.flush();
         Serial.end();
 /* */   delay( 10000 );
@@ -296,7 +319,7 @@ unsigned long int main_array_size_now = sizeof( ISRXREF ) + \
         Serial.print( F( "Memory space of " ) );
         Serial.print( main_array_size_now );
         Serial.print( F( " bytes was refused allocation.  Aborting..." ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.flush();
         Serial.end();
         return ( false );
@@ -385,12 +408,18 @@ delay( 2000 );//ensure all devices get a rest period right here
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
     }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "LIST OF " ) );
     Serial.print( NUM_DIGITAL_PINS );
-    Serial.print( F( " DIGITAL PINS" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.print( F( " DIGITAL PINS." ) );
+#ifdef NUM_ANALOG_INPUTS
+    Serial.print( F( "  Note there are " ) );
+    Serial.print( NUM_ANALOG_INPUTS );
+    Serial.print( F( " analog input pins, A0=D" ) );
+    Serial.print( A0 );
+#endif
+    Serial.println();
     for ( u8 pinxref_index = 0; pinxref_index < NUM_DIGITAL_PINS; pinxref_index++ )
     {
         Serial.print( F( "Pin D" ) );
@@ -421,7 +450,7 @@ delay( 2000 );//ensure all devices get a rest period right here
         { 
             Serial.print( F( ", LED_BUILTIN " ) );//compiler ( one version in Linux Mint, at least ) is so problematic with printing the word "builtin" ( either case ) as the last thing on the line that we can't do it straightforwardly, so the space is added to end.  Simply amazing...
         }
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         if( !duplicate_pin_higher )
         {
             for( u8 dup_pin_index = pinxref_index + 1; dup_pin_index < NUM_DIGITAL_PINS; dup_pin_index++ )
@@ -442,15 +471,15 @@ delay( 2000 );//ensure all devices get a rest period right here
         Serial.print( F( " that is a duplicate of digital pin number " ) );
         Serial.print( duplicate_pin_lower );
         Serial.print( F( ", one" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "or more of these pins are virtual pins that are duplicates of real ones that have a lower" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "number, in which case a device connected to such will only show as being connected the" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "lower numbered pin.  Due to general Arduino memory space limitations, this sketch only lets" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "you know of the first one." ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
     }
     for ( u8 devspec_index = 0; \
     devspec_index < number_of_devices_found; \
@@ -494,9 +523,9 @@ delay( 2000 );//ensure all devices get a rest period right here
     while ( !Serial ) { 
       ; // wait for serial port to connect. Needed for Leonardo's native USB
     }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "DHT devices found on pins:" ) );//
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     u8 DHT_count = 0;
         for( u8 devspec_index = 0; devspec_index < ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ); devspec_index++ )
         {
@@ -506,7 +535,7 @@ delay( 2000 );//ensure all devices get a rest period right here
             if ( Devspec[ devspec_index ].Dpin < 10 ) Serial.print( F( "  " ) );
             else Serial.print( F( " " ) );
             print_analog_if_exists( Devspec[ devspec_index ].Dpin );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+            Serial.println(); 
         }
     if( !DHT_count )
         Serial.print( F( "No " ) );
@@ -516,9 +545,9 @@ delay( 2000 );//ensure all devices get a rest period right here
         Serial.print( DHT_count );
     }
     Serial.print( F( " DHT devices are connected" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
 
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.flush();
     Serial.end();
 }
@@ -688,12 +717,12 @@ void mem_frag_alert()
 
 #ifndef __LGT8FX8E__
     Serial.print( F( "Alert: Possible memory fragmentation as evidenced by internal acquisition of a memory block in a higher address of heap memory while changing the size of an internal array." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "Memory fragmentation is NOT a fault condition - it is simply non-ideal due to its long term effects, and the developers of this product have gone to lengths to prevent it from happening on their account.  Accruing memory fragmentation long term usually eventually leads to unpredictable/degraded/unstable/locked operation.  Advisable action if this is a mission-critical application and this message appears periodically: reboot this device at your very next opportunity" ) );
 #else
     Serial.print( F( "Possible memory fragmentation" ) );
 #endif
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.flush();
     Serial.end();
  }
@@ -710,7 +739,7 @@ void mem_defrag_alert()
 #else
     Serial.print( F( "Fragmentation improved." ) );
 #endif
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.flush();
     Serial.end();
 
@@ -1584,8 +1613,8 @@ EndOfThisPin:;
     bool any_wrong_digitalPinToPCMSKbit_reports = false;
     for ( u8 j = 0; j < number_of_ISRs; j++ )
     {
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+        Serial.println(); 
+        Serial.println(); 
         Serial.print( F( "For this ISR ( ISR" ) );
         Serial.print( j );
         Serial.print( F( " with PCMSK" ) );
@@ -1596,7 +1625,7 @@ EndOfThisPin:;
             Serial.print( j-1 );
 #endif
         Serial.print( F( " ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         for ( u8 i = 0; i < 8; i++ )
         {
             Serial.print( i );
@@ -1644,12 +1673,12 @@ EndOfThisPin:;
                 }
             }
             else Serial.print( F( "No PCINT-to-pin connection or the supported pin is declared protected" ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+            Serial.println(); 
         }
     }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+    Serial.println(); 
     Serial.print( F( "Summary of ISR-to-pin information:" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+    Serial.println(); 
 #ifdef PCMSK
     Serial.print( F( "ISR - D-pins by PCMSK bit" ) );         // j is ISR number
     #ifdef PCMSK0
@@ -1671,7 +1700,7 @@ EndOfThisPin:;
 
     for ( u8 i = 0; i < 8; i++ )                                                                                         // i is PCMSK bit
     { 
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+        Serial.println(); 
         Serial.print( i );
         Serial.print( F( ": " ) );
 #if defined ( PCMSK ) || defined ( PCMSK0 )
@@ -1908,19 +1937,19 @@ EndOfThisPin:;
         else Serial.print( F( "---" ) );
 #endif
     }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+    Serial.println(); 
+    Serial.println(); 
     if ( any_wrong_digitalPinToPCICRbit_reports )
     { 
         Serial.print( F( "! = digitalPinToPCICRbit() function reports the wrong PCICR for this pin.  This software product will work around it; other software will likely not correct the report error" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+        Serial.println(); 
     }
     if ( any_wrong_digitalPinToPCMSKbit_reports )
     { 
         Serial.print( F( "* = digitalPinToPCMSKbit() function reports the wrong PCMSK bit for this pin.  This software product will work around it; other software will likely not correct the report error" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+        Serial.println(); 
     }
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 ); 
+    Serial.println(); 
     Serial.flush();
     Serial.end();
 //WE FINALLY KNOW HOW MANY DHT DEVICES SERVED BY ISR THERE ARE.  MAKE AN ARRAY OF THEM WITH A XREF ARRAY
@@ -1938,11 +1967,11 @@ void setup() {
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "A necessary feature is not available: Timer0's A comparison register." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "This sketch will end." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.flush();
     Serial.end();
     delay( 100000 );
@@ -1953,11 +1982,11 @@ void setup() {
         Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
         Serial.setTimeout( 10 ); //
         while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "Judging from the contents of Timer0's A Output Compare Match registers, some other process is using the comparison feature this sketch is designed for" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.print( F( "Rather than disable anything else, this sketch will end because it is not sophisticated enough to use Match B as backup while other processes may interfere" ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         Serial.flush();
         Serial.end();
         return ;
@@ -1971,51 +2000,50 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
 #ifndef __LGT8FX8E__
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "Arduino DHTs on Interrupts Unleashed Sketch" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "This sketch will display the numbers of all digital pins with the ports and port masks" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "for them, detect and display all DHT devices connected (even those on pins not" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "supporting Pin Change Interrupts), and detect the existence of all Pin Change Interrupts" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "supported by the microcontroller board and display them for you." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "IT LEARNS THE INTERRUPT DETAIL BY TOGGLING PINS, so all pins must be free to toggle for" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "the results shown to be correct." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "If you need to, you may protect pins from being tested for devices by listing them in one" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "of the two protected pin arrays.  The built-in LED renders its pin useless for DHT use," ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "so that pin is included in the list of protected pins by default and is given an alternate" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "function, if you need it, of being high during the duration of the device detection process." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "The intent is so it can be used to control signal-gating circuitry of your design and" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "construction to effectively disconnect pin signals and protect driven devices from the" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "extraneous toggling occurring during device detection." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
+    Serial.println();
     Serial.print( F( "If you see nonsense characters displayed associated with the detection process, please" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "take the time now to add your board's serial communication pins to one of these" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
     Serial.print( F( "protecting arrays if you'll be using pins for serial communications." ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
 #endif
     Serial.flush();
     Serial.end();
-    unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
-    if ( wincheck > 0 && wincheck < 101 ) mswindows = true ; else mswindows = false;
+//    unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
     build_from_nothing();
     delay( 2000 );
     number_of_ports_with_functioning_DHT_devices_and_serviced_by_ISR = 0;    //This tells reset_ISR_findings_and_reprobe() that we need this variable re-valued to know how large the ports_with_DHT_devices... array must be initialized for
@@ -2036,26 +2064,26 @@ while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's na
 if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
 {
     Serial.print( F( "No DHT devices were detected, so the following statements are null and void:" ) );
-    Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+    Serial.println();
 }
 Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
 Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
 Serial.print( F( " with your entire" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.print( F( "will list all DHT devices each with its last " ) );
 Serial.print( confidence_depth );
 Serial.print( F( " values obtained.  Entering the index" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.print( F( "greater than " ) );
 Serial.print( alert_beyond_this_number_of_consecutive_errs );
 Serial.print( F( " consecutively are displayed asynchronously by void loop() as" ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.print( F( "they happen." ) );
-Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+Serial.println();
 Serial.flush();
 }
 
@@ -2156,7 +2184,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
                 Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
                 Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
                 Serial.print( F( "mS " ) );
-                Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+                Serial.println();
                 Serial.flush();
             }
         }
@@ -2214,7 +2242,7 @@ void showNewData() //COURTESY Robin2 ON http://forum.arduino.cc/index.php?topic=
             Serial.print( F( " = last_attempted_read seconds ago. remaining rest: " ) );
             Serial.print( this_Devspec_address->device_busy_resting_this_more_millis );
             Serial.print( F( "mS " ) );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+            Serial.println();
         }
         else
         {
@@ -2259,13 +2287,13 @@ void loop()
             Serial.print( this_Devspec_address->consecutive_read_failures_mode3 );
             Serial.print( F( " " ) );
             Serial.print( this_Devspec_address->consecutive_read_failures_mode4 );
-            Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+            Serial.println();
         }
     }
     if( ( strlen( ports_string_in_heap_array ) > 26 ) || ( ( u8 )ports_string_in_heap_array[ strlen( ports_string_in_heap_array ) + 1 ] != 255 ) )
     {
         Serial.print( F( "Heap overwrite failure " ) );
-        Serial.print( ( char )10 );if( mswindows ) Serial.print( ( char )13 );
+        Serial.println();
         delay( 30000 );
     }
     Serial.flush();
