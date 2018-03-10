@@ -416,8 +416,7 @@ delay( 2000 );//ensure all devices get a rest period right here
 #ifdef NUM_ANALOG_INPUTS
     Serial.print( F( "  Note there are " ) );
     Serial.print( NUM_ANALOG_INPUTS );
-    Serial.print( F( " analog input pins, A0=D" ) );
-    Serial.print( A0 );
+    Serial.print( F( " analog input pins, only the ones that can be made digital are shown alongside their digital numbers" ) );
 #endif
     Serial.println();
     for ( u8 pinxref_index = 0; pinxref_index < NUM_DIGITAL_PINS; pinxref_index++ )
