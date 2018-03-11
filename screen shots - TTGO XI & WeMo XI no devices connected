@@ -1,4 +1,29 @@
-LIST OF 20 DIGITAL PINS.  Note there are 8 analog input pins, only the ones that can be made digital are here shown alongside their digital numbers
+
+
+Arduino DHTs on Interrupts Unleashed Sketch
+
+This sketch will display the numbers of all digital pins with the ports and port masks
+for them, detect and display all DHT devices connected (even those on pins not
+supporting Pin Change Interrupts), and detect the existence of all Pin Change Interrupts
+supported by the microcontroller board and display them for you.
+
+IT LEARNS THE INTERRUPT DETAIL BY TOGGLING PINS, so all pins must be free to toggle for
+the results shown to be correct.
+
+If you need to, you may protect pins from being tested for devices by listing them in one
+of the two protected pin arrays.  The built-in LED renders its pin useless for DHT use,
+so that pin is included in the list of protected pins by default and is given an alternate
+function, if you need it, of being high during the duration of the device detection process.
+The intent is so it can be used to control signal-gating circuitry of your design and
+construction to effectively disconnect pin signals and protect driven devices from the
+extraneous toggling occurring during device detection.
+
+If you see nonsense characters displayed associated with the detection process, please
+take the time now to add your board's serial communication pins to one of these
+protecting arrays if you'll be using pins for serial communications.
+
+
+LIST OF 20 DIGITAL PINS.  Note there are 8 analog input pins, only the ones that can be made digital are shown here alongside their digital numbers
 Pin D0       :PORTD bit 0
 Pin D1       :PORTD bit 1
 Pin D2       :PORTD bit 2
@@ -80,4 +105,4 @@ ISR0 - D-pins by PCMSK0 bit       ISR1 - D-pins by PCMSK1 bit       ISR2 - D-pin
 7: ---                            ---                               D7                             ---
 
 
-No DHT de⸮
+End of sketch ability in this board
