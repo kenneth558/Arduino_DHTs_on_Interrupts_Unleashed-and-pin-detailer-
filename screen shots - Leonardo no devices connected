@@ -1,4 +1,4 @@
-Arduino DHTs on Interrupt Steroids Sketch
+Arduino DHTs on Interrupts Unleashed Sketch
 
 This sketch will display the numbers of all digital pins with the ports and port masks
 for them, detect and display all DHT devices connected (even those on pins not
@@ -20,7 +20,8 @@ If you see nonsense characters displayed associated with the detection process, 
 take the time now to add your board's serial communication pins to one of these
 protecting arrays if you'll be using pins for serial communications.
 
-LIST OF 31 DIGITAL PINS
+
+LIST OF 31 DIGITAL PINS.  Note there are 12 analog input pins, only the ones that can be made digital are shown here alongside their digital numbers
 Pin D0       :PORTD bit 2
 Pin D1       :PORTD bit 3 pin is protected by it being listed in a protected pins array
 Pin D2       :PORTD bit 1
@@ -61,6 +62,7 @@ you know of the first one.
 DHT devices found on pins:
 No  DHT devices are connected
 
+(<-Ignore any extraneous characters here)
 
 For this ISR ( ISR0 with PCMSK0 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
 0: Can be triggered by each voltage toggle occurring on D17      ( port PORTB bit mask 1 )
@@ -86,8 +88,9 @@ ISR0 - D-pins by PCMSK0 bit
 * = digitalPinToPCMSKbit() function reports the wrong PCMSK bit for this pin.  This software product will work around it; other software will likely not correct the report error
 
 No DHT devices were detected, so the following statements are null and void:
-Factory sketch functions: enter the letter A or a number between 0 and 0 with your entire
+Factory sketch functions: enter the letter A or a number between 0 and 4294967295 with your entire
 entry enclosed between these two characters: < and >.  Entering the letter A so enclosed
 will list all DHT devices each with its last 5 values obtained.  Entering the index
 number of any selected device will do the same for the one device only.  Reading errors
-that occur are displayed asynchronously by void loop() as they happen.
+greater than 5 consecutively are displayed asynchronously by void loop() as
+they happen.
