@@ -1,5 +1,5 @@
       Arduino DHTs on Interrupts Unleashed          (previously named Arduino_DHTs_on_Interrupt_steroids)
-I'm giving you the screen shots of a few boards.  Review those screen shots before deciding you really need to download and run this sketch.  Maybe my screen shot of your board shows you all you need to know.
+I'm giving you the screen shots of a few boards.  Review those screen shots before deciding you really need to download and run this sketch.  Maybe my screen shot of your board shows you all you need to know.  That is all I do when I need to review a board's PCI ISR and Pin info.
 
 
 Files you need to place in your sketch directory:
