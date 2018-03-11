@@ -1,4 +1,6 @@
-Arduino DHTs on Interrupt Steroids Sketch
+
+
+Arduino DHTs on Interrupts Unleashed Sketch
 
 This sketch will display the numbers of all digital pins with the ports and port masks
 for them, detect and display all DHT devices connected (even those on pins not
@@ -20,7 +22,8 @@ If you see nonsense characters displayed associated with the detection process, 
 take the time now to add your board's serial communication pins to one of these
 protecting arrays if you'll be using pins for serial communications.
 
-LIST OF 70 DIGITAL PINS
+
+LIST OF 70 DIGITAL PINS.  Note there are 16 analog input pins, only the ones that can be made digital are shown here alongside their digital numbers
 Pin D0       :PORTE bit 0
 Pin D1       :PORTE bit 1 pin is protected by it being listed in a protected pins array
 Pin D2       :PORTE bit 4
@@ -94,51 +97,6 @@ Pin D69 (A15):PORTK bit 7
 
 DHT devices found on pins:
 No  DHT devices are connected
-
-
-For this ISR ( ISR0 with PCMSK0 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
-0: Can be triggered by each voltage toggle occurring on D53      ( port PORTB bit mask 1 )
-1: Can be triggered by each voltage toggle occurring on D52      ( port PORTB bit mask 10 )
-2: Can be triggered by each voltage toggle occurring on D51      ( port PORTB bit mask 100 )
-3: Can be triggered by each voltage toggle occurring on D50      ( port PORTB bit mask 1000 )
-4: Can be triggered by each voltage toggle occurring on D10      ( port PORTB bit mask 10000 )
-5: Can be triggered by each voltage toggle occurring on D11      ( port PORTB bit mask 100000 )
-6: Can be triggered by each voltage toggle occurring on D12      ( port PORTB bit mask 1000000 )
-7: No PCINT-to-pin connection or the supported pin is declared protected
-
-For this ISR ( ISR1 with PCMSK1 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
-0: Can be triggered by each voltage toggle occurring on D0       ( port PORTE bit mask 1 )!
-1: Can be triggered by each voltage toggle occurring on D15      ( port PORTJ bit mask 1 )!*
-2: Can be triggered by each voltage toggle occurring on D14      ( port PORTJ bit mask 10 )!*
-3: No PCINT-to-pin connection or the supported pin is declared protected
-4: No PCINT-to-pin connection or the supported pin is declared protected
-5: No PCINT-to-pin connection or the supported pin is declared protected
-6: No PCINT-to-pin connection or the supported pin is declared protected
-7: No PCINT-to-pin connection or the supported pin is declared protected
-
-For this ISR ( ISR2 with PCMSK2 ), each PCMSK bit showing the pins that will trigger a pin change interrupt on it:
-0: Can be triggered by each voltage toggle occurring on D62 (A8) ( port PORTK bit mask 1 )
-1: Can be triggered by each voltage toggle occurring on D63 (A9) ( port PORTK bit mask 10 )
-2: Can be triggered by each voltage toggle occurring on D64 (A10)( port PORTK bit mask 100 )
-3: Can be triggered by each voltage toggle occurring on D65 (A11)( port PORTK bit mask 1000 )
-4: Can be triggered by each voltage toggle occurring on D66 (A12)( port PORTK bit mask 10000 )
-5: Can be triggered by each voltage toggle occurring on D67 (A13)( port PORTK bit mask 100000 )
-6: Can be triggered by each voltage toggle occurring on D68 (A14)( port PORTK bit mask 1000000 )
-7: Can be triggered by each voltage toggle occurring on D69 (A15)( port PORTK bit mask 10000000 )
-
-Summary of ISR-to-pin information:
-ISR0 - D-pins by PCMSK0 bit       ISR1 - D-pins by PCMSK1 bit       ISR2 - D-pins by PCMSK2 bit
-0: D53                            D0       !                        D62 (A8)                       
-1: D52                            D15      !*                       D63 (A9)                       
-2: D51                            D14      !*                       D64 (A10)                      
-3: D50                            ---                               D65 (A11)                      
-4: D10                            ---                               D66 (A12)                      
-5: D11                            ---                               D67 (A13)                      
-6: D12                            ---                               D68 (A14)                      
-7: ---                            ---                               D69 (A15)                      
-
-! = digitalPinToPCICRbit() function reports the wrong PCICR for this pin.  This software product will work around it; other software will likely not correct the report error
-* = digitalPinToPCMSKbit() function reports the wrong PCMSK bit for this pin.  This software product will work around it; other software will likely not correct the report error
 
 No DHT devices were detected, so the following statements are null and void:
 Factory sketch functions: enter the letter A or a number between 0 and 0 with your entire
