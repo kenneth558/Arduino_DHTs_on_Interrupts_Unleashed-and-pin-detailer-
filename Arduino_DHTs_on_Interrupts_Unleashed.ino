@@ -1946,6 +1946,9 @@ void setup() {
 #ifndef OCR0A
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
+#ifdef __LGT8FX8E__
+    delay( 10000 );//Needed for this board for Serial communications to be reliable
+#endif
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
     Serial.println();
     Serial.print( F( "A necessary feature is not available: Timer0's A comparison register." ) );
@@ -1979,7 +1982,6 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
     Serial.setTimeout( 10 ); //
     while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
-#ifndef __LGT8FX8E__
     Serial.println();
     Serial.println();
     Serial.print( F( "Arduino DHTs on Interrupts Unleashed Sketch" ) );
@@ -2020,7 +2022,6 @@ TIFR0 &= 0xFD; // to avoid an immediate interrupt occurring.  Clear this like th
     Serial.println();
     Serial.print( F( "protecting arrays if you'll be using pins for serial communications." ) );
     Serial.println();
-#endif
     Serial.flush();
     Serial.end();
 //    unsigned short wincheck = resistor_between_LED_BUILTIN_and_PIN_A0();
@@ -2041,30 +2042,33 @@ Serial.end();
 Serial.begin( _baud_rate_ ); //This speed is very dependent on the host's ability
 Serial.setTimeout( 10 ); //
 while ( !Serial ) ; // wait for serial port to connect. Needed for Leonardo's native USB
-if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
-{
-    Serial.print( F( "No DHT devices were detected, so the following statements are null and void:" ) );
+#ifndef __LGT8FX8E__
+    if( !( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) )
+    {
+        Serial.println( F( "No DHT devices were detected, so the following statements are null and void:" ) );
+    }
+    Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
+    Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
+    Serial.print( F( " with your entire" ) );
     Serial.println();
-}
-Serial.print( F( "Factory sketch functions: enter the letter A or a number between 0 and " ) );
-Serial.print( ( ( ( long unsigned int )ports_string_in_heap_array - ( long unsigned int )Devspec ) / sizeof( DEVSPEC ) ) - 1 );
-Serial.print( F( " with your entire" ) );
-Serial.println();
-Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
-Serial.println();
-Serial.print( F( "will list all DHT devices each with its last " ) );
-Serial.print( confidence_depth );
-Serial.print( F( " values obtained.  Entering the index" ) );
-Serial.println();
-Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
-Serial.println();
-Serial.print( F( "greater than " ) );
-Serial.print( alert_beyond_this_number_of_consecutive_errs );
-Serial.print( F( " consecutively are displayed asynchronously by void loop() as" ) );
-Serial.println();
-Serial.print( F( "they happen." ) );
-Serial.println();
-Serial.flush();
+    Serial.print( F( "entry enclosed between these two characters: < and >.  Entering the letter A so enclosed" ) );
+    Serial.println();
+    Serial.print( F( "will list all DHT devices each with its last " ) );
+    Serial.print( confidence_depth );
+    Serial.print( F( " values obtained.  Entering the index" ) );
+    Serial.println();
+    Serial.print( F( "number of any selected device will do the same for the one device only.  Reading errors" ) );
+    Serial.println();
+    Serial.print( F( "greater than " ) );
+    Serial.print( alert_beyond_this_number_of_consecutive_errs );
+    Serial.print( F( " consecutively are displayed asynchronously by void loop() as" ) );
+    Serial.println();
+    Serial.print( F( "they happen." ) );
+    Serial.println();
+    Serial.flush();
+#else
+    Serial.println( F( "End of sketch ability in this board" ) );
+#endif
 }
 
 const byte numChars = 32;
