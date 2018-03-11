@@ -32,32 +32,7 @@ If the line above causes a compile-time error, there are two possible reasons li
     short unsigned _baud_rate_ = 19200;//In production environment the XI tends to power up at baud 19200 so we can't risk setting baud to anything but that
     #define LED_BUILTIN 12
 #endif
-#if defined ( NUM_ANALOG_INPUTS ) && not defined ( PIN_A0 )
-//if compiler errors here, you have a board the does not define its analog pins per de facto standards
-//Just comment out ONLY the lines that cause compiler to error, leaving the lines prior to those intact
-//Then save the modified file and re-compile
-    #define PIN_A0 A0
-    #define PIN_A1 A1
-    #define PIN_A2 A2
-    #define PIN_A3 A3
-    #define PIN_A4 A4
-    #define PIN_A5 A5
-    #define PIN_A6 A6
-    #define PIN_A7 A7
-    #define PIN_A8 A8
-    #define PIN_A9 A9
-    #define PIN_A10 A10
-    #define PIN_A11 A11
-    #define PIN_A12 A12
-    #define PIN_A13 A13
-    #define PIN_A14 A14
-    #define PIN_A15 A15
-    #define PIN_A16 A16
-    #define PIN_A17 A17
-    #define PIN_A18 A18
-    #define PIN_A19 A19
-    #define PIN_A20 A20
-#endif
+#include "analog_pin_adjust.h"
 // You as end-user can specify in next line the pins that you want protected from the signals placed on ISR( PCINT_vect )-capable pins during the DHT discovery process.  These pins will not be mucked with, but nor will they then support an ISR( PCINTn_vect )-serviced DHT device.
 const u8 pins_NOT_safe_even_to_make_low_Z_during_testing[ ] = { };
 #if defined ( SERIAL_PORT_HARDWARE ) && defined ( LED_BUILTIN )
