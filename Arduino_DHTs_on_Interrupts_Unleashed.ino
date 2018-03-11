@@ -1966,10 +1966,9 @@ void setup() {
         Serial.setTimeout( 10 ); //
         while ( !Serial ); // wait for serial port to connect. Needed for Leonardo's native USB
         Serial.println();
-        Serial.print( F( "Judging from the contents of Timer0's A Output Compare Match registers, some other process is using the comparison feature this sketch is designed for" ) );
-        Serial.println();
-        Serial.print( F( "Rather than disable anything else, this sketch will end because it is not sophisticated enough to use Match B as backup while other processes may interfere" ) );
-        Serial.println();
+        Serial.println( F( "Judging from the contents of Timer0's A Output Compare Match registers, some other process is using the comparison feature this sketch is designed for" ) );
+        Serial.println( F( "probably due to library changes since this sketch was published." ) );
+        Serial.println( F( "Rather than disable anything else, this sketch will end as it is not sophisticated enough to play well with other processes using Match B" ) );
         Serial.flush();
         Serial.end();
         return ;
