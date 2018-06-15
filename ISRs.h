@@ -8,7 +8,7 @@ volatile u8 bit_counter_in_isr;
 volatile u8 index_in_PCMSK_of_current_device_within_ISR_plus8;
 //volatile u8 pin;
 volatile u8 i;
-
+//Found SPI.setBitOrder(MSBFIRST) in case it could be useful in future morphs
 ISR( TIMER0_COMPA_vect )
 {
     sei();//Bear in mind atomic needs, but if we don't do this here, we miss PCI data transitions
