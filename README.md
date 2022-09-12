@@ -17,8 +17,11 @@ analog_pin_adjust.h
 ** External 5VDC power supply for your sensors may be required: Save yourself some frustration and use one while getting your system stable, THEN try without it.  Otherwise you'll not really know if the lack of an external power supply is the cause of instabilites that may occur.  The way I supply the extra supply voltage is from spare Arduinos - each Arduino powers 2 or 3 sensors, maybe more if you want to experiment.**
 
 On the TTGO/WeMo XI: 
-  -- a 10 second startup delay is required for the Serial to become functionaly.
+
+  -- a 10 second startup delay is required for the Serial to become functional.
+
   -- sketch provides useful info but full functionality is not yet achieved due to insufficient flash memory of that board.
+
 
 The main purpose for inventing the interrupt back in the day was to avoid the time waste of polling in a software loop.  This project was developed because other DHT libraries that advertised interrupt useage still unnecessarily rely on polling as well, making their claimed use of interrupts virtually meaningless, not to mention their limitation of less DHT devices per board than necessary.  You can read all the sensors you want to with proper application of the interrupt code posted here.  Connect them all up and go - the PCI pins are identified and listed for you in setup() code by a probe function, and every device on any digital pin (PCI or not) is detected  for you by another probe function.  Note for the purist that these probing functions are actually executed in the order of device detect first, then PCI pin discover second.  The sensors found on PCI pins will start streaming their data after the forced rest period, and readings will then become available.  The last 5 readings (determined by the confidence level variable) from every device are stored along with the age of each sensor's most recent reading.  Devices connected to pins NOT supported by PCIs will still be shown in the startup print, but this code won't operate them - you'll have to use legacy code to read those sensors.  Just make sure that, if the legacy code uses interrupts, it doesn't disable interrupts for too long so as to interfere with this code.  Empiric experimentation should enable you to adequately assess compatibility.
 
